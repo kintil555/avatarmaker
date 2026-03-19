@@ -2,867 +2,360 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>MC Avatar Maker</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Outfit:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Outfit:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#f5f5f5;
+  --surface:#ffffff;
+  --surface2:#f0f0f0;
+  --border:#ddd;
+  --accent:#3b82f6;
+  --accent2:#a855f7;
+  --accent3:#06b6d4;
+  --text:#222;
+  --text-dim:#888;
+  --radius:8px;
+  --success:#22c55e;
+  --danger:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
 
-  :root {
-    --bg: #0f0f13;
-    --surface: #17171e;
-    --surface2: #1e1e28;
-    --border: #2a2a38;
-    --accent: #4f9eff;
-    --accent2: #a855f7;
-    --accent3: #22d3ee;
-    --text: #e8e8f0;
-    --text-dim: #7a7a9a;
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
+/* NAV */
+nav{background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;height:52px;position:sticky;top:0;z-index:100;gap:0}
+.logo{font-family:'VT323',monospace;font-size:22px;letter-spacing:2px;color:#222;margin-right:32px;text-decoration:none}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:0;flex:1}
+.nav-link{padding:0 18px;height:52px;display:flex;align-items:center;font-size:13px;font-weight:500;color:var(--text-dim);text-decoration:none;border-bottom:2px solid transparent;transition:all .15s;cursor:pointer;letter-spacing:.3px;text-transform:uppercase}
+.nav-link.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-link:hover:not(.active){color:var(--text)}
+.nav-actions{display:flex;gap:8px;margin-left:auto}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* LAYOUT */
+.main{display:flex;height:calc(100vh - 52px);overflow:hidden}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Outfit', sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+/* CONTROLS SIDEBAR */
+.controls{width:420px;min-width:420px;background:#fff;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
+.controls::-webkit-scrollbar{width:5px}
+.controls::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
 
-  /* HEADER */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-  .logo {
-    font-family: 'VT323', monospace;
-    font-size: 24px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-shadow: 0 0 20px rgba(79,158,255,0.4);
-  }
-  .logo span { color: var(--accent2); }
-  .header-actions { display: flex; gap: 8px; }
+/* POSE SECTION */
+.ctrl-section{padding:16px 20px;border-bottom:1px solid #f0f0f0}
+.section-head{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#aaa;margin-bottom:10px}
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.toggle-label{font-size:13px;color:var(--text)}
 
-  /* LAYOUT */
-  .app {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    height: calc(100vh - 53px);
-  }
+/* SLIDERS TABLE */
+.slider-table{width:100%}
+.slider-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.row-label{width:72px;font-size:12px;color:var(--text-dim);flex-shrink:0}
+.slider-group{display:flex;gap:4px;flex:1}
+.sld-wrap{flex:1;display:flex;align-items:center;gap:4px}
+input[type=range]{-webkit-appearance:none;flex:1;height:4px;background:#e0e0e0;border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer}
+.val-num{width:32px;font-size:11px;color:var(--text-dim);text-align:right;font-variant-numeric:tabular-nums}
 
-  /* SIDEBAR LEFT - Controls */
-  .sidebar {
-    width: 280px;
-    min-width: 280px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+/* TOGGLE */
+.toggle{position:relative;width:34px;height:18px;cursor:pointer;flex-shrink:0}
+.toggle input{display:none}
+.toggle-track{position:absolute;inset:0;background:#ccc;border-radius:9px;transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--accent)}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked~.toggle-thumb{transform:translateX(16px)}
 
-  .tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .tab {
-    flex: 1;
-    padding: 10px 4px;
-    text-align: center;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-  }
-  .tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-  .tab:hover:not(.active) { color: var(--text); }
+/* BUTTONS */
+.btn{padding:6px 16px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#2563eb}
+.btn.sm{padding:4px 10px;font-size:11px}
+.btn.full{width:100%;justify-content:center}
+.btn.link{border:none;background:none;color:var(--accent);padding:0;font-size:12px}
+.btn.link:hover{text-decoration:underline}
+select{background:#fff;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:5px 8px;font-family:'Outfit',sans-serif;font-size:12px;outline:none;cursor:pointer}
+select:focus{border-color:var(--accent)}
+input[type=text]{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-family:'Outfit',sans-serif;font-size:12px;outline:none;color:var(--text);width:100%;background:#fff}
+input[type=text]:focus{border-color:var(--accent)}
+.color-swatch{width:26px;height:26px;border-radius:5px;border:1px solid var(--border);cursor:pointer;position:relative;overflow:hidden;flex-shrink:0}
+.color-swatch input[type=color]{position:absolute;inset:-4px;width:34px;height:34px;border:none;padding:0;cursor:pointer;opacity:0}
+.swatch-bg{position:absolute;inset:0;pointer-events:none;border-radius:4px}
 
-  .tab-content { display: none; flex: 1; overflow-y: auto; padding: 14px; }
-  .tab-content.active { display: block; }
-  .tab-content::-webkit-scrollbar { width: 4px; }
-  .tab-content::-webkit-scrollbar-track { background: transparent; }
-  .tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* FX CARD */
+.fx-card{border:1px solid #e8e8e8;border-radius:10px;padding:14px;margin-bottom:10px}
+.fx-title{font-size:12px;font-weight:600;color:#555;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.fx-badge{font-size:9px;padding:2px 6px;border-radius:10px;background:#f0f0f0;color:#888;letter-spacing:.5px}
+.fx-badge.shader{background:#ede9fe;color:#7c3aed}
+.fx-badge.postfx{background:#e0f2fe;color:#0284c7}
 
-  /* Controls */
-  .section-title {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 14px 0 8px;
-  }
-  .section-title:first-child { margin-top: 0; }
+/* CANVAS */
+.canvas-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden}
+.canvas-box{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;position:relative;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+#main-canvas{display:block}
+.canvas-toolbar{position:absolute;top:12px;right:12px;display:flex;gap:6px}
+.tool-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.9);color:#666;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;backdrop-filter:blur(4px)}
+.tool-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tool-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;border-radius:20px;padding:4px 12px;font-size:11px;pointer-events:none;white-space:nowrap}
 
-  .ctrl-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .ctrl-label {
-    width: 64px;
-    font-size: 12px;
-    color: var(--text-dim);
-    flex-shrink: 0;
-  }
-  .ctrl-label.wide { width: 100%; margin-bottom: 4px; }
+/* UPLOAD */
+.upload-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.upload-box{background:#fff;border:2px dashed #ccc;border-radius:12px;padding:40px 48px;text-align:center;cursor:pointer;transition:all .2s;max-width:320px}
+.upload-box:hover,.upload-box.drag-over{border-color:var(--accent);background:#f0f7ff}
+.upload-icon{font-size:40px;margin-bottom:12px}
+.upload-title{font-size:18px;font-weight:500;margin-bottom:6px}
+.upload-sub{font-size:12px;color:#999;margin-bottom:16px}
 
-  input[type="range"] {
-    -webkit-appearance: none;
-    flex: 1;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    box-shadow: 0 0 6px rgba(79,158,255,0.5);
-  }
-  input[type="number"] {
-    width: 44px;
-    padding: 3px 4px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    font-size: 11px;
-    font-family: 'Outfit', sans-serif;
-    text-align: center;
-    outline: none;
-  }
-  input[type="number"]:focus { border-color: var(--accent); }
+/* ITEMS */
+.items-panel{width:256px;min-width:256px;background:#fff;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.items-header{padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.arm-tabs{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px}
+.arm-tab{flex:1;padding:5px;text-align:center;font-size:12px;font-weight:500;color:var(--text-dim);cursor:pointer;transition:all .15s}
+.arm-tab.active{background:var(--accent);color:#fff}
+.slot-row{display:flex;gap:6px;margin-bottom:8px}
+.slot{flex:1;border:1px solid var(--border);border-radius:6px;padding:5px;display:flex;align-items:center;gap:5px;min-height:38px;background:#fafafa}
+.slot img{width:26px;height:26px;image-rendering:pixelated}
+.slot-name{font-size:11px;color:#999;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot-x{font-size:12px;color:#ccc;cursor:pointer;transition:color .15s}
+.slot-x:hover{color:var(--danger)}
+.items-search{width:100%;padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-family:'Outfit',sans-serif;font-size:12px;outline:none;background:#fafafa}
+.items-search:focus{border-color:var(--accent)}
+.items-body{flex:1;overflow-y:auto;padding:8px}
+.items-body::-webkit-scrollbar{width:4px}
+.items-body::-webkit-scrollbar-thumb{background:#e0e0e0;border-radius:2px}
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:2px}
+.item-cell{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:5px;cursor:pointer;border:1.5px solid transparent;transition:all .1s;position:relative}
+.item-cell:hover{background:#f5f5f5}
+.item-cell.sl{border-color:#3b82f6}
+.item-cell.sr{border-color:#a855f7}
+.item-cell.sb{border-color:#22c55e}
+.item-cell img{width:28px;height:28px;image-rendering:pixelated}
+.item-dot{position:absolute;bottom:2px;right:2px;width:5px;height:5px;border-radius:50%;border:1px solid #fff}
+.dot-l{background:#3b82f6}
+.dot-r{background:#a855f7}
+.items-pages{padding:6px 8px;display:flex;flex-wrap:wrap;gap:3px;border-top:1px solid var(--border);flex-shrink:0}
+.pg-btn{padding:2px 7px;border-radius:4px;border:1px solid var(--border);font-size:11px;cursor:pointer;background:#fff;color:#666;transition:all .15s}
+.pg-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 6px;
-  }
-  .toggle-label { font-size: 13px; color: var(--text); }
+/* GENERATED */
+#gen-panel{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+#gen-panel img{width:80px;height:80px;border-radius:8px;border:1px solid var(--border);image-rendering:pixelated;display:block;cursor:pointer}
+#gen-panel .gen-label{font-size:10px;color:#999;text-align:center;margin-top:3px}
+#gen-panel .close-btn{position:absolute;top:8px;right:10px;cursor:pointer;color:#bbb;font-size:13px}
+#gen-panel .close-btn:hover{color:#333}
 
-  .toggle {
-    position: relative;
-    width: 36px; height: 20px;
-    cursor: pointer;
-  }
-  .toggle input { display: none; }
-  .toggle-track {
-    position: absolute; inset: 0;
-    background: var(--border);
-    border-radius: 10px;
-    transition: background 0.2s;
-  }
-  .toggle input:checked + .toggle-track { background: var(--accent); }
-  .toggle-thumb {
-    position: absolute;
-    top: 3px; left: 3px;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: white;
-    transition: transform 0.2s;
-  }
-  .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+/* LIGHT AREA */
+.light-area{width:80px;height:80px;background:#f5f5f5;border:1px solid var(--border);border-radius:8px;position:relative;cursor:crosshair;flex-shrink:0;overflow:hidden}
+.light-steve{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#8d6e63;border-radius:2px}
+.light-pt{position:absolute;width:12px;height:12px;border-radius:50%;background:#facc15;box-shadow:0 0 6px #facc15;transform:translate(-50%,-50%);pointer-events:none;border:2px solid #fff8}
 
-  .color-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .color-swatch {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    border: 2px solid var(--border);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .color-swatch input[type="color"] {
-    position: absolute;
-    inset: -4px;
-    width: 36px; height: 36px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    opacity: 0;
-  }
-  .color-swatch-display {
-    position: absolute; inset: 0;
-    pointer-events: none;
-  }
+@media(max-width:1100px){.items-panel{display:none}}
+@media(max-width:800px){.controls{width:320px;min-width:320px}}
 
-  .btn {
-    padding: 7px 14px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text);
-    font-family: 'Outfit', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn:hover { border-color: var(--accent); color: var(--accent); }
-  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn.primary:hover { background: #6aadff; }
-  .btn.sm { padding: 4px 10px; font-size: 11px; }
-  .btn.full { width: 100%; justify-content: center; margin-bottom: 6px; }
-  .btn.danger { border-color: var(--danger); color: var(--danger); }
-  .btn.danger:hover { background: var(--danger); color: #fff; }
-
-  /* SSS & OUTLINE section */
-  .fx-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 12px;
-    margin-bottom: 10px;
-  }
-  .fx-card-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--accent3);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .fx-badge {
-    font-size: 9px;
-    padding: 1px 6px;
-    border-radius: 10px;
-    background: rgba(34,211,238,0.15);
-    color: var(--accent3);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  /* CANVAS AREA */
-  .canvas-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: var(--bg);
-    overflow: hidden;
-  }
-
-  #canvas-container {
-    position: relative;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 80px rgba(79,158,255,0.06);
-  }
-  #canvas-container canvas {
-    display: block;
-    image-rendering: pixelated;
-  }
-
-  .canvas-toolbar {
-    position: absolute;
-    top: 16px; right: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .tool-btn {
-    width: 36px; height: 36px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: rgba(23,23,30,0.85);
-    color: var(--text-dim);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: all 0.15s;
-    backdrop-filter: blur(4px);
-  }
-  .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  .canvas-hint {
-    position: absolute;
-    bottom: 16px;
-    left: 50%; transform: translateX(-50%);
-    background: rgba(23,23,30,0.8);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 11px;
-    color: var(--text-dim);
-    backdrop-filter: blur(4px);
-    white-space: nowrap;
-  }
-
-  .upload-overlay {
-    position: absolute; inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-  }
-  .upload-box {
-    background: var(--surface);
-    border: 2px dashed var(--border);
-    border-radius: var(--radius-lg);
-    padding: 40px 48px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    max-width: 340px;
-  }
-  .upload-box:hover, .upload-box.drag-over {
-    border-color: var(--accent);
-    background: rgba(79,158,255,0.04);
-  }
-  .upload-icon { font-size: 40px; margin-bottom: 12px; }
-  .upload-title { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
-  .upload-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 16px; }
-
-  /* ITEMS PANEL */
-  .items-panel {
-    width: 260px;
-    min-width: 260px;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .items-header {
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .arm-selector {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 8px;
-  }
-  .arm-btn {
-    flex: 1;
-    padding: 6px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text-dim);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.15s;
-  }
-  .arm-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
-  .preview-slots {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .slot {
-    flex: 1;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 42px;
-  }
-  .slot img { width: 28px; height: 28px; image-rendering: pixelated; }
-  .slot-info { flex: 1; min-width: 0; }
-  .slot-name { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .slot-clear { font-size: 14px; color: var(--text-dim); cursor: pointer; flex-shrink: 0; transition: color 0.15s; }
-  .slot-clear:hover { color: var(--danger); }
-
-  .items-search {
-    width: 100%;
-    padding: 7px 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: 'Outfit', sans-serif;
-    font-size: 12px;
-    outline: none;
-  }
-  .items-search:focus { border-color: var(--accent); }
-
-  .items-grid-wrap {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px;
-  }
-  .items-grid-wrap::-webkit-scrollbar { width: 4px; }
-  .items-grid-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-    gap: 3px;
-  }
-  .item-cell {
-    width: 40px; height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    border: 1.5px solid transparent;
-    transition: all 0.1s;
-  }
-  .item-cell:hover { background: var(--surface2); }
-  .item-cell.sel-l { border-color: var(--accent); }
-  .item-cell.sel-r { border-color: var(--accent2); }
-  .item-cell.sel-b { border-color: var(--success); }
-  .item-cell img { width: 30px; height: 30px; image-rendering: pixelated; }
-  .item-dot {
-    position: absolute;
-    bottom: 2px; right: 2px;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    border: 1px solid var(--surface);
-  }
-  .dot-l { background: var(--accent); }
-  .dot-r { background: var(--accent2); }
-
-  .items-pages {
-    padding: 8px;
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    border-top: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .pg-btn {
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text-dim);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .pg-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .pg-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    .items-panel { display: none; }
-  }
-  @media (max-width: 640px) {
-    .sidebar { width: 240px; min-width: 240px; }
-  }
-
-  /* Slider accent colors */
-  .slider-purple::-webkit-slider-thumb { background: var(--accent2); box-shadow: 0 0 6px rgba(168,85,247,0.5); }
-  .slider-cyan::-webkit-slider-thumb { background: var(--accent3); box-shadow: 0 0 6px rgba(34,211,238,0.5); }
-  .slider-green::-webkit-slider-thumb { background: var(--success); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
-
-  /* Status dot */
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--success);
-    display: inline-block;
-    box-shadow: 0 0 6px var(--success);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    padding: 5px 8px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 12px;
-    outline: none;
-    cursor: pointer;
-    width: 100%;
-  }
-  select:focus { border-color: var(--accent); }
-
-  /* Light area for directional light */
-  .light-area {
-    width: 90px; height: 90px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    position: relative;
-    overflow: hidden;
-    cursor: crosshair;
-    flex-shrink: 0;
-  }
-  .light-steve {
-    position: absolute;
-    left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px; height: 10px;
-    background: #8d6e63;
-    border-radius: 2px;
-  }
-  .light-pt {
-    position: absolute;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: #ffeb3b;
-    box-shadow: 0 0 8px #ffeb3b;
-    transform: translate(-50%, -50%);
-    cursor: grab;
-    border: 2px solid #fff8;
-    pointer-events: none;
-  }
-
-  .info-text {
-    font-size: 11px;
-    color: var(--text-dim);
-    line-height: 1.6;
-    margin-top: 4px;
-  }
-
-  /* Checkerboard for transparent bg */
-  .checker {
-    background-image:
-      linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
-      linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
-      linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
-    background-size: 12px 12px;
-    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
-  }
+/* Quality select */
+.quality-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.quality-label{font-size:12px;color:var(--text-dim);width:80px}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">MC<span>AVA</span> MAKER</div>
-  <div class="header-actions">
-    <span class="status-dot" id="status-dot"></span>
-    <button class="btn sm" id="btn-download">⬇ Download</button>
-    <button class="btn sm primary" id="btn-generate">⚡ Generate Avatars</button>
+<nav>
+  <a class="logo" href="#">MC<span>SKY</span></a>
+  <div class="nav-links">
+    <div class="nav-link active" data-section="pose">Custom Pose</div>
+    <div class="nav-link" data-section="scene">Scene</div>
+    <div class="nav-link" data-section="items">Items</div>
+    <div class="nav-link" data-section="fx">FX</div>
   </div>
-</header>
+  <div class="nav-actions">
+    <button class="btn sm" id="btn-dl">⬇ Download</button>
+    <button class="btn sm primary" id="btn-generate">⚡ Generate</button>
+  </div>
+</nav>
 
-<div class="app">
-  <!-- LEFT SIDEBAR -->
-  <div class="sidebar">
-    <div class="tabs">
-      <div class="tab active" data-tab="pose">Pose</div>
-      <div class="tab" data-tab="scene">Scene</div>
-      <div class="tab" data-tab="fx">FX</div>
-    </div>
+<div class="main">
+  <!-- CONTROLS -->
+  <div class="controls">
 
-    <!-- POSE TAB -->
-    <div class="tab-content active" id="tab-pose">
+    <!-- POSE SECTION -->
+    <div class="ctrl-section" id="section-pose">
+      <div class="section-head">Pose</div>
       <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="tg-headonly"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         <span class="toggle-label">Head only</span>
-        <label class="toggle">
-          <input type="checkbox" id="toggle-headonly" />
-          <div class="toggle-track"></div>
-          <div class="toggle-thumb"></div>
-        </label>
       </div>
-
-      <div class="section-title">Model rotation</div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">X</span>
-        <input type="range" min="-180" max="180" value="0" id="s-model-x" /><input type="number" value="0" id="n-model-x" />
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="tg-slim"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        <span class="toggle-label">Slim arms (Alex)</span>
       </div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">Y</span>
-        <input type="range" min="-180" max="180" value="0" id="s-model-y" /><input type="number" value="0" id="n-model-y" />
+      <div id="pose-sliders">
+        <!-- Generated by JS -->
       </div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">Z</span>
-        <input type="range" min="-180" max="180" value="0" id="s-model-z" /><input type="number" value="0" id="n-model-z" />
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn sm" id="btn-reset-pose">↺ Reset</button>
+        <button class="btn sm" id="btn-copy-pose">Copy JSON</button>
+        <button class="btn sm" id="btn-load-pose">Load JSON</button>
       </div>
-
-      <div class="section-title">Head</div>
-      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-head-x"/><input type="number" value="0" id="n-head-x"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-head-y"/><input type="number" value="0" id="n-head-y"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-head-z"/><input type="number" value="0" id="n-head-z"/></div>
-
-      <div class="section-title">Body</div>
-      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-body-x"/><input type="number" value="0" id="n-body-x"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-body-y"/><input type="number" value="0" id="n-body-y"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-body-z"/><input type="number" value="0" id="n-body-z"/></div>
-
-      <div class="section-title">Left arm</div>
-      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-180" max="180" value="0" id="s-larm-x"/><input type="number" value="0" id="n-larm-x"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-180" max="180" value="0" id="s-larm-y"/><input type="number" value="0" id="n-larm-y"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-180" max="180" value="0" id="s-larm-z"/><input type="number" value="0" id="n-larm-z"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Elbow</span><input type="range" min="0" max="200" value="0" id="s-larm-e"/><input type="number" value="0" id="n-larm-e"/></div>
-
-      <div class="section-title">Right arm</div>
-      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-180" max="180" value="0" id="s-rarm-x"/><input type="number" value="0" id="n-rarm-x"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-180" max="180" value="0" id="s-rarm-y"/><input type="number" value="0" id="n-rarm-y"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-180" max="180" value="0" id="s-rarm-z"/><input type="number" value="0" id="n-rarm-z"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Elbow</span><input type="range" min="0" max="200" value="0" id="s-rarm-e"/><input type="number" value="0" id="n-rarm-e"/></div>
-
-      <div class="section-title">Left leg</div>
-      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-lleg-x"/><input type="number" value="0" id="n-lleg-x"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-lleg-y"/><input type="number" value="0" id="n-lleg-y"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-lleg-z"/><input type="number" value="0" id="n-lleg-z"/></div>
-
-      <div class="section-title">Right leg</div>
-      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-rleg-x"/><input type="number" value="0" id="n-rleg-x"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-rleg-y"/><input type="number" value="0" id="n-rleg-y"/></div>
-      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-rleg-z"/><input type="number" value="0" id="n-rleg-z"/></div>
-
-      <div style="margin-top:14px; display:flex; gap:6px;">
-        <button class="btn full" id="btn-reset-pose">↺ Reset pose</button>
-      </div>
-
-      <div class="section-title">Save / Load pose</div>
-      <textarea id="pose-json" style="width:100%;height:70px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:monospace;font-size:10px;padding:6px;resize:none;outline:none;" placeholder='Paste JSON here...'></textarea>
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <button class="btn sm" id="btn-copy-pose" style="flex:1">Copy</button>
-        <button class="btn sm" id="btn-load-pose" style="flex:1">Load</button>
-      </div>
+      <textarea id="pose-json" style="width:100%;height:56px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:monospace;font-size:10px;padding:5px;resize:none;outline:none;color:#555;background:#fafafa" placeholder="Paste pose JSON..."></textarea>
     </div>
 
-    <!-- SCENE TAB -->
-    <div class="tab-content" id="tab-scene">
-      <div class="section-title">Skin</div>
-      <button class="btn full" id="btn-upload-skin">📂 Upload skin (.png)</button>
+    <!-- SCENE SECTION -->
+    <div class="ctrl-section" id="section-scene" style="display:none">
+      <div class="section-head">Skin</div>
+      <button class="btn full" id="btn-upload" style="margin-bottom:6px">📂 Upload skin PNG</button>
       <input type="file" id="file-skin" accept="image/png" style="display:none"/>
-      <div class="ctrl-row" style="margin-top:6px;">
-        <span class="ctrl-label wide">Or username:</span>
-      </div>
-      <div class="ctrl-row">
-        <input type="text" id="input-username" placeholder="Minecraft username" style="flex:1;padding:6px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;outline:none;" />
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <input type="text" id="input-user" placeholder="Minecraft username"/>
         <button class="btn sm" id="btn-fetch">Get</button>
       </div>
 
-      <div class="section-title">Lighting</div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">Ambient</span>
-        <input type="range" min="0" max="100" value="40" id="s-ambient" />
-        <input type="number" value="40" id="n-ambient" />
+      <div class="section-head">Lighting</div>
+      <div class="slider-row">
+        <span class="row-label">Ambient</span>
+        <div class="sld-wrap"><input type="range" min="0" max="100" value="40" id="s-ambient"/><span class="val-num" id="v-ambient">40</span></div>
       </div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">Directional</span>
-        <input type="range" min="0" max="100" value="60" id="s-dlight" />
-        <input type="number" value="60" id="n-dlight" />
+      <div class="slider-row">
+        <span class="row-label">Directional</span>
+        <div class="sld-wrap"><input type="range" min="0" max="100" value="70" id="s-dlight"/><span class="val-num" id="v-dlight">70</span></div>
       </div>
-      <div class="color-row">
-        <span style="font-size:12px;color:var(--text-dim);">Light color</span>
-        <div class="color-swatch" id="swatch-light">
-          <div class="color-swatch-display" style="background:#ffffff"></div>
-          <input type="color" value="#ffffff" id="color-light" />
-        </div>
+      <div class="slider-row" style="margin-bottom:8px">
+        <span class="row-label">Light color</span>
+        <div class="color-swatch"><div class="swatch-bg" id="sw-light" style="background:#fff"></div><input type="color" value="#ffffff" id="c-light"/></div>
       </div>
 
-      <div class="section-title">Sun position</div>
-      <div class="ctrl-row">
+      <div class="section-head" style="margin-top:12px">Sun position</div>
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px">
         <div class="light-area" id="light-area">
           <div class="light-steve"></div>
           <div class="light-pt" id="light-pt" style="left:75%;top:25%"></div>
         </div>
-        <div class="info-text" style="margin-left:8px">Drag the<br/>yellow dot<br/>to reposition<br/>sun</div>
+        <span style="font-size:11px;color:#999;line-height:1.7">Drag yellow dot<br/>to reposition<br/>the sun light</span>
       </div>
 
-      <div class="section-title">Background</div>
+      <div class="section-head">Background</div>
       <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="tg-bg"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         <span class="toggle-label">Enable background</span>
-        <label class="toggle"><input type="checkbox" id="toggle-bg"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
       </div>
-      <div class="color-row">
-        <span style="font-size:12px;color:var(--text-dim);">Color 1</span>
-        <div class="color-swatch" id="swatch-bg1">
-          <div class="color-swatch-display" style="background:#1a1a2e"></div>
-          <input type="color" value="#1a1a2e" id="color-bg1"/>
-        </div>
-        <span style="font-size:12px;color:var(--text-dim);">Color 2</span>
-        <div class="color-swatch" id="swatch-bg2">
-          <div class="color-swatch-display" style="background:#16213e"></div>
-          <input type="color" value="#16213e" id="color-bg2"/>
-        </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;color:#999">Color 1</span>
+        <div class="color-swatch"><div class="swatch-bg" id="sw-bg1" style="background:#dde6f0"></div><input type="color" value="#dde6f0" id="c-bg1"/></div>
+        <span style="font-size:12px;color:#999">Color 2</span>
+        <div class="color-swatch"><div class="swatch-bg" id="sw-bg2" style="background:#f0f4f8"></div><input type="color" value="#f0f4f8" id="c-bg2"/></div>
       </div>
 
-      <div class="section-title">Floor</div>
+      <div class="section-head">Floor / Shadow</div>
       <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="tg-floor"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         <span class="toggle-label">Show floor</span>
-        <label class="toggle"><input type="checkbox" id="toggle-floor"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-      </div>
-      <div class="color-row">
-        <span style="font-size:12px;color:var(--text-dim);">Floor color</span>
-        <div class="color-swatch" id="swatch-floor">
-          <div class="color-swatch-display" style="background:#ffffff"></div>
-          <input type="color" value="#ffffff" id="color-floor"/>
-        </div>
       </div>
 
-      <div class="section-title">Camera</div>
-      <div class="ctrl-row">
-        <span class="ctrl-label">FOV</span>
-        <input type="range" min="20" max="120" value="45" id="s-fov"/>
-        <input type="number" value="45" id="n-fov"/>
+      <div class="section-head">Camera</div>
+      <div class="slider-row">
+        <span class="row-label">FOV</span>
+        <div class="sld-wrap"><input type="range" min="20" max="110" value="45" id="s-fov"/><span class="val-num" id="v-fov">45</span></div>
+      </div>
+
+      <div class="section-head">Quality</div>
+      <div class="quality-row">
+        <span class="quality-label">Graphics</span>
+        <select id="sel-quality">
+          <option value="0.5">Low</option>
+          <option value="1" selected>Medium</option>
+          <option value="2">High</option>
+        </select>
+        <label class="toggle" style="margin-left:8px"><input type="checkbox" id="tg-shadow" checked/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        <span style="font-size:12px;color:#888;margin-left:4px">Shadows</span>
       </div>
     </div>
 
-    <!-- FX TAB -->
-    <div class="tab-content" id="tab-fx">
+    <!-- ITEMS SECTION (mirror of right panel) -->
+    <div class="ctrl-section" id="section-items" style="display:none">
+      <div class="section-head">Items in hand</div>
+      <p style="font-size:12px;color:#999;margin-bottom:6px">Select items from the panel on the right →</p>
+      <div style="display:flex;gap:8px">
+        <div>
+          <div style="font-size:11px;color:#999;margin-bottom:3px">Left hand</div>
+          <div class="slot" id="ctrl-slot-l" style="width:100px"><span class="slot-name" id="ctrl-name-l">empty</span></div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:#999;margin-bottom:3px">Right hand</div>
+          <div class="slot" id="ctrl-slot-r" style="width:100px"><span class="slot-name" id="ctrl-name-r">empty</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FX SECTION -->
+    <div class="ctrl-section" id="section-fx" style="display:none">
+      <div class="section-head">Shader Effects</div>
+
       <!-- OUTLINE -->
       <div class="fx-card">
-        <div class="fx-card-title">
-          <span>◻</span> Outline
-          <span class="fx-badge">Post-FX</span>
-        </div>
+        <div class="fx-title">◻ Outline <span class="fx-badge postfx">Inverted hull</span></div>
         <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="tg-outline"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
           <span class="toggle-label">Enable outline</span>
-          <label class="toggle"><input type="checkbox" id="toggle-outline"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Thickness</span>
-          <input type="range" min="1" max="20" value="3" step="1" id="s-outline-thick" class="slider-cyan"/>
-          <input type="number" value="3" id="n-outline-thick"/>
+        <div class="slider-row">
+          <span class="row-label">Thickness</span>
+          <div class="sld-wrap"><input type="range" min="1" max="20" step="1" value="3" id="s-out-thick"/><span class="val-num" id="v-out-thick">3</span></div>
         </div>
-        <div class="color-row">
-          <span style="font-size:12px;color:var(--text-dim);">Color</span>
-          <div class="color-swatch">
-            <div class="color-swatch-display" id="outline-color-display" style="background:#000000"></div>
-            <input type="color" value="#000000" id="color-outline"/>
-          </div>
-        </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Style</span>
-          <select id="sel-outline-style" style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <span style="font-size:12px;color:#888;width:72px">Color</span>
+          <div class="color-swatch"><div class="swatch-bg" id="sw-outline" style="background:#000"></div><input type="color" value="#000000" id="c-outline"/></div>
+          <span style="font-size:12px;color:#888;margin-left:8px">Style</span>
+          <select id="sel-out-style" style="flex:1">
             <option value="solid">Solid</option>
-            <option value="sketch">Sketch / rough</option>
+            <option value="sketch">Sketch</option>
             <option value="glow">Glow</option>
           </select>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Opacity</span>
-          <input type="range" min="0" max="100" value="100" id="s-outline-opacity" class="slider-cyan"/>
-          <input type="number" value="100" id="n-outline-opacity"/>
+        <div class="slider-row">
+          <span class="row-label">Opacity</span>
+          <div class="sld-wrap"><input type="range" min="0" max="100" value="100" id="s-out-opacity"/><span class="val-num" id="v-out-opacity">100</span></div>
         </div>
-        <p class="info-text">Outline rendered via inverted hull + optional edge detection pass.</p>
       </div>
 
       <!-- SSS -->
       <div class="fx-card">
-        <div class="fx-card-title">
-          <span>✦</span> Subsurface Scattering
-          <span class="fx-badge">Shader</span>
-        </div>
+        <div class="fx-title">✦ Subsurface Scattering <span class="fx-badge shader">GLSL</span></div>
         <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="tg-sss"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
           <span class="toggle-label">Enable SSS</span>
-          <label class="toggle"><input type="checkbox" id="toggle-sss"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Strength</span>
-          <input type="range" min="0" max="100" value="40" id="s-sss-strength" class="slider-purple"/>
-          <input type="number" value="40" id="n-sss-strength"/>
+        <div class="slider-row">
+          <span class="row-label">Strength</span>
+          <div class="sld-wrap"><input type="range" min="0" max="100" value="40" id="s-sss-str"/><span class="val-num" id="v-sss-str">40</span></div>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Radius</span>
-          <input type="range" min="0" max="100" value="30" id="s-sss-radius" class="slider-purple"/>
-          <input type="number" value="30" id="n-sss-radius"/>
+        <div class="slider-row">
+          <span class="row-label">Radius</span>
+          <div class="sld-wrap"><input type="range" min="0" max="100" value="30" id="s-sss-rad"/><span class="val-num" id="v-sss-rad">30</span></div>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Distortion</span>
-          <input type="range" min="0" max="100" value="20" id="s-sss-distortion" class="slider-purple"/>
-          <input type="number" value="20" id="n-sss-distortion"/>
+        <div class="slider-row">
+          <span class="row-label">Distortion</span>
+          <div class="sld-wrap"><input type="range" min="0" max="100" value="20" id="s-sss-dis"/><span class="val-num" id="v-sss-dis">20</span></div>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Ambient</span>
-          <input type="range" min="0" max="100" value="10" id="s-sss-ambient" class="slider-purple"/>
-          <input type="number" value="10" id="n-sss-ambient"/>
+        <div class="slider-row">
+          <span class="row-label">Ambient</span>
+          <div class="sld-wrap"><input type="range" min="0" max="100" value="10" id="s-sss-amb"/><span class="val-num" id="v-sss-amb">10</span></div>
         </div>
-        <div class="color-row">
-          <span style="font-size:12px;color:var(--text-dim);">Scatter tint</span>
-          <div class="color-swatch">
-            <div class="color-swatch-display" id="sss-color-display" style="background:#ff6666"></div>
-            <input type="color" value="#ff6666" id="color-sss"/>
-          </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:#888;width:72px">Tint</span>
+          <div class="color-swatch"><div class="swatch-bg" id="sw-sss" style="background:#ff6666"></div><input type="color" value="#ff6666" id="c-sss"/></div>
         </div>
-        <p class="info-text">Simulates light scattering through skin using a custom GLSL shader with wrap lighting + translucency.</p>
       </div>
 
-      <!-- Toon shading -->
+      <!-- TOON -->
       <div class="fx-card">
-        <div class="fx-card-title">
-          <span>◈</span> Toon Shading
-          <span class="fx-badge">Shader</span>
-        </div>
+        <div class="fx-title">◈ Toon Shading <span class="fx-badge shader">GLSL</span></div>
         <div class="toggle-row">
+          <label class="toggle"><input type="checkbox" id="tg-toon"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
           <span class="toggle-label">Enable toon</span>
-          <label class="toggle"><input type="checkbox" id="toggle-toon"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
         </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Steps</span>
-          <input type="range" min="2" max="8" value="4" step="1" id="s-toon-steps" class="slider-green"/>
-          <input type="number" value="4" id="n-toon-steps"/>
-        </div>
-        <p class="info-text">Quantizes diffuse shading into discrete steps for cel-shaded look.</p>
-      </div>
-
-      <!-- Bloom -->
-      <div class="fx-card">
-        <div class="fx-card-title">
-          <span>✦</span> Bloom
-          <span class="fx-badge">Post-FX</span>
-        </div>
-        <div class="toggle-row">
-          <span class="toggle-label">Enable bloom</span>
-          <label class="toggle"><input type="checkbox" id="toggle-bloom"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="ctrl-row">
-          <span class="ctrl-label">Strength</span>
-          <input type="range" min="0" max="100" value="30" id="s-bloom" class="slider-purple"/>
-          <input type="number" value="30" id="n-bloom"/>
+        <div class="slider-row">
+          <span class="row-label">Steps</span>
+          <div class="sld-wrap"><input type="range" min="2" max="8" step="1" value="4" id="s-toon-steps"/><span class="val-num" id="v-toon-steps">4</span></div>
         </div>
       </div>
     </div>
@@ -870,1093 +363,683 @@
 
   <!-- CANVAS CENTER -->
   <div class="canvas-wrap">
-    <div id="upload-overlay" class="upload-overlay">
+    <div class="upload-overlay" id="upload-overlay">
       <div class="upload-box" id="upload-box">
         <div class="upload-icon">🎮</div>
         <div class="upload-title">Load your skin</div>
-        <div class="upload-sub">Drop a PNG here, or click to browse.<br/>Or enter a username in Scene tab.</div>
-        <label for="file-skin-2">
-          <button class="btn primary" onclick="document.getElementById('file-skin-2').click()">Choose skin file</button>
-        </label>
-        <input type="file" id="file-skin-2" accept="image/png" style="display:none"/>
+        <div class="upload-sub">Drop a PNG here, or click to browse<br/>You can also enter a username in Scene tab</div>
+        <button class="btn primary" onclick="document.getElementById('file-skin').click()">Choose skin file</button>
       </div>
     </div>
 
-    <div id="canvas-container" style="display:none">
+    <div class="canvas-box" id="canvas-box" style="display:none">
       <canvas id="main-canvas"></canvas>
-    </div>
-
-    <div class="canvas-toolbar" id="canvas-toolbar" style="display:none">
-      <div class="tool-btn" title="Reset camera" id="btn-reset-cam">⟲</div>
-      <div class="tool-btn" title="Wireframe" id="btn-wireframe">▦</div>
-      <div class="tool-btn" title="Screenshot" id="btn-screenshot">📷</div>
-    </div>
-
-    <div class="canvas-hint" id="canvas-hint" style="display:none">
-      🖱 drag to rotate · scroll to zoom · right-drag to pan
+      <div class="canvas-toolbar">
+        <div class="tool-btn" id="tb-cam" title="Reset camera">⟲</div>
+        <div class="tool-btn" id="tb-wire" title="Wireframe">▦</div>
+        <div class="tool-btn" id="tb-ss" title="Screenshot">📷</div>
+      </div>
+      <div class="canvas-hint">🖱 drag rotate · scroll zoom · right-drag pan</div>
     </div>
   </div>
 
-  <!-- RIGHT PANEL - Items -->
+  <!-- ITEMS PANEL -->
   <div class="items-panel">
     <div class="items-header">
-      <div class="arm-selector">
-        <div class="arm-btn active" id="arm-left" onclick="setArm('left')">Left arm</div>
-        <div class="arm-btn" id="arm-right" onclick="setArm('right')">Right arm</div>
+      <div class="arm-tabs">
+        <div class="arm-tab active" id="at-l" onclick="setArm('left')">Left arm</div>
+        <div class="arm-tab" id="at-r" onclick="setArm('right')">Right arm</div>
       </div>
-      <div class="preview-slots">
-        <div class="slot" id="slot-left">
-          <span style="font-size:11px;color:var(--text-dim)">L: empty</span>
-        </div>
-        <div class="slot" id="slot-right">
-          <span style="font-size:11px;color:var(--text-dim)">R: empty</span>
-        </div>
+      <div class="slot-row">
+        <div class="slot" id="slot-l"><span class="slot-name">empty</span></div>
+        <div class="slot" id="slot-r"><span class="slot-name">empty</span></div>
       </div>
       <input class="items-search" id="item-search" placeholder="Search item #..." oninput="filterItems(this.value)"/>
     </div>
-    <div class="items-grid-wrap">
+    <div class="items-body">
       <div class="items-grid" id="items-grid"></div>
-      <div id="items-no-result" style="display:none;padding:24px;text-align:center;color:var(--text-dim);font-size:12px;">No items found</div>
+      <div id="items-empty" style="display:none;padding:20px;text-align:center;color:#bbb;font-size:12px">No items</div>
     </div>
     <div class="items-pages" id="items-pages"></div>
   </div>
 </div>
 
-<script>
-// ─── Three.js via CDN ───────────────────────────────────────────────
-</script>
+<!-- THREE.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+// ── EMBEDDED GLTF DATA ──────────────────────────────────────────────
+const GLTF_NORMAL = '{"asset":{"version":"2.0","generator":"Blockbench 5.0.7 glTF exporter"},"scenes":[{"nodes":[12,15,18],"name":"blockbench_export"}],"scene":0,"nodes":[{"translation":[0,-1.5,0],"name":"Head","mesh":0},{"translation":[0,-1.5,0],"name":"Hat Layer","mesh":1},{"translation":[0,0.75,0],"name":"Head","children":[0,1]},{"translation":[0,-1.5,0],"name":"Body","mesh":2},{"translation":[0,-1.5,0],"name":"Body Layer","mesh":3},{"translation":[0,0.75,0],"name":"Body","children":[3,4]},{"translation":[-0.3125,-1.375,0],"name":"Right Arm","mesh":4},{"translation":[-0.3125,-1.375,0],"name":"Right Arm Layer","mesh":5},{"translation":[0.3125,0.625,0],"name":"Right Arm","children":[6,7]},{"translation":[0.3125,-1.375,0],"name":"Left Arm","mesh":6},{"translation":[0.3125,-1.375,0],"name":"Left Arm Layer","mesh":7},{"translation":[-0.3125,0.625,0],"name":"Left Arm","children":[9,10]},{"translation":[0,0.75,0],"name":"Waist","children":[2,5,8,11]},{"translation":[-0.11875,-0.75,0],"name":"Right Leg","mesh":8},{"translation":[-0.11875,-0.75,0],"name":"Right Leg Layer","mesh":9},{"translation":[0.11875,0.75,0],"name":"Right Leg","children":[13,14]},{"translation":[0.11875,-0.75,0],"name":"Left Leg","mesh":10},{"translation":[0.11875,-0.75,0],"name":"Left Leg Layer","mesh":11},{"translation":[-0.11875,0.75,0],"name":"Left Leg","children":[16,17]}],"bufferViews":[{"buffer":0,"byteOffset":0,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":288,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":576,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":768,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":840,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":1128,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":1416,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":1608,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":1680,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":1968,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":2256,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":2448,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":2520,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":2808,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":3096,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":3288,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":3360,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":3648,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":3936,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":4128,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":4200,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":4488,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":4776,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":4968,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":5040,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":5328,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":5616,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":5808,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":5880,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":6168,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":6456,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":6648,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":6720,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":7008,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":7296,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":7488,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":7560,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":7848,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":8136,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":8328,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":8400,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":8688,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":8976,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":9168,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":9240,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":9528,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":9816,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":10008,"byteLength":72,"target":34963}],"buffers":[{"byteLength":10080,"uri":"data:application/octet-stream;base64,AACAPgAAAEAAAIA+AACAPgAAAEAAAIC+AACAPgAAwD8AAIA+AACAPgAAwD8AAIC+AACAvgAAAEAAAIC+AACAvgAAAEAAAIA+AACAvgAAwD8AAIC+AACAvgAAwD8AAIA+AACAvgAAAEAAAIC+AACAPgAAAEAAAIC+AACAvgAAAEAAAIA+AACAPgAAAEAAAIA+AACAvgAAwD8AAIA+AACAPgAAwD8AAIA+AACAvgAAwD8AAIC+AACAPgAAwD8AAIC+AACAvgAAAEAAAIA+AACAPgAAAEAAAIA+AACAvgAAwD8AAIA+AACAPgAAwD8AAIA+AACAPgAAAEAAAIC+AACAvgAAAEAAAIC+AACAPgAAwD8AAIC+AACAvgAAwD8AAIC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQBAAD4AgP89AEAAPgAAgDkAwH8+AID/PQDAfz4AIIA+AEAAPgDgvz4AQAA+ACCAPgDAfz4A4L8+AMB/PgDAfz4AgP89AEAAPgCA/z0AwH8+AACAOQBAAD4AAIA5AOC/PgAAgDkAIIA+AACAOQDgvz4AgP89ACCAPgCA/z0AIMA+AEAAPgDg/z4AQAA+ACDAPgDAfz4A4P8+AMB/PgBAAD4AQAA+AMB/PgBAAD4AQAA+AMB/PgDAfz4AwH8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACQPgAAAkAAAJA+AACQPgAAAkAAAJC+AACQPgAAvD8AAJA+AACQPgAAvD8AAJC+AACQvgAAAkAAAJC+AACQvgAAAkAAAJA+AACQvgAAvD8AAJC+AACQvgAAvD8AAJA+AACQvgAAAkAAAJC+AACQPgAAAkAAAJC+AACQvgAAAkAAAJA+AACQPgAAAkAAAJA+AACQvgAAvD8AAJA+AACQPgAAvD8AAJA+AACQvgAAvD8AAJC+AACQPgAAvD8AAJC+AACQvgAAAkAAAJA+AACQPgAAAkAAAJA+AACQvgAAvD8AAJA+AACQPgAAvD8AAJA+AACQPgAAAkAAAJC+AACQvgAAAkAAAJC+AACQPgAAvD8AAJC+AACQvgAAvD8AAJC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAAPwBAAD4A8B8/AEAAPgAQAD8AwH8+APAfPwDAfz4AEEA/AEAAPgDwXz8AQAA+ABBAPwDAfz4A8F8/AMB/PgDwPz8AgP89ABAgPwCA/z0A8D8/AACAOQAQID8AAIA5APBfPwAAgDkAEEA/AACAOQDwXz8AgP89ABBAPwCA/z0AEGA/AEAAPgDwfz8AQAA+ABBgPwDAfz4A8H8/AMB/PgAQID8AQAA+APA/PwBAAD4AECA/AMB/PgDwPz8AwH8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACAPgAAwD8AAAA+AACAPgAAwD8AAAC+AACAPgAAQD8AAAA+AACAPgAAQD8AAAC+AACAvgAAwD8AAAC+AACAvgAAwD8AAAA+AACAvgAAQD8AAAC+AACAvgAAQD8AAAA+AACAvgAAwD8AAAC+AACAPgAAwD8AAAC+AACAvgAAwD8AAAA+AACAPgAAwD8AAAA+AACAvgAAQD8AAAA+AACAPgAAQD8AAAA+AACAvgAAQD8AAAC+AACAPgAAQD8AAAC+AACAvgAAwD8AAAA+AACAPgAAwD8AAAA+AACAvgAAQD8AAAA+AACAPgAAQD8AAAA+AACAPgAAwD8AAAC+AACAvgAAwD8AAAC+AACAPgAAQD8AAAC+AACAvgAAQD8AAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ACCAPgAgoD4A4J8+ACCgPgAggD4A4P8+AOCfPgDg/z4AIOA+ACCgPgDg/z4AIKA+ACDgPgDg/z4A4P8+AOD/PgDg3z4A4J8+ACCgPgDgnz4A4N8+ACCAPgAgoD4AIIA+APAPPwAggD4AIOA+ACCAPgDwDz8A4J8+ACDgPgDgnz4AEAA/ACCgPgDwHz8AIKA+ABAAPwDg/z4A8B8/AOD/PgAgoD4AIKA+AODfPgAgoD4AIKA+AOD/PgDg3z4A4P8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACIPgAAwj8AABA+AACIPgAAwj8AABC+AACIPgAAPD8AABA+AACIPgAAPD8AABC+AACIvgAAwj8AABC+AACIvgAAwj8AABA+AACIvgAAPD8AABC+AACIvgAAPD8AABA+AACIvgAAwj8AABC+AACIPgAAwj8AABC+AACIvgAAwj8AABA+AACIPgAAwj8AABA+AACIvgAAPD8AABA+AACIPgAAPD8AABA+AACIvgAAPD8AABC+AACIPgAAPD8AABC+AACIvgAAwj8AABA+AACIPgAAwj8AABA+AACIvgAAPD8AABA+AACIPgAAPD8AABA+AACIPgAAwj8AABC+AACIvgAAwj8AABC+AACIPgAAPD8AABC+AACIvgAAPD8AABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ACCAPgAQED8A4J8+ABAQPwAggD4A8D8/AOCfPgDwPz8AIOA+ABAQPwDg/z4AEBA/ACDgPgDwPz8A4P8+APA/PwDg3z4A8A8/ACCgPgDwDz8A4N8+ABAAPwAgoD4AEAA/APAPPwAQAD8AIOA+ABAAPwDwDz8A8A8/ACDgPgDwDz8AEAA/ABAQPwDwHz8AEBA/ABAAPwDwPz8A8B8/APA/PwAgoD4AEBA/AODfPgAQED8AIKA+APA/PwDg3z4A8D8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAAAAPwAAwD8AAAA+AAAAPwAAwD8AAAC+AAAAPwAAQD8AAAA+AAAAPwAAQD8AAAC+AACAPgAAwD8AAAC+AACAPgAAwD8AAAA+AACAPgAAQD8AAAC+AACAPgAAQD8AAAA+AACAPgAAwD8AAAC+AAAAPwAAwD8AAAC+AACAPgAAwD8AAAA+AAAAPwAAwD8AAAA+AACAPgAAQD8AAAA+AAAAPwAAQD8AAAA+AACAPgAAQD8AAAC+AAAAPwAAQD8AAAC+AACAPgAAwD8AAAA+AAAAPwAAwD8AAAA+AACAPgAAQD8AAAA+AAAAPwAAQD8AAAA+AAAAPwAAwD8AAAC+AACAPgAAwD8AAAC+AAAAPwAAQD8AAAC+AACAPgAAQD8AAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAgPwAgoD4A8C8/ACCgPgAQID8A4P8+APAvPwDg/z4AEEA/ACCgPgDwTz8AIKA+ABBAPwDg/z4A8E8/AOD/PgDwPz8A4J8+ABAwPwDgnz4A8D8/ACCAPgAQMD8AIIA+APBPPwAggD4AEEA/ACCAPgDwTz8A4J8+ABBAPwDgnz4AEFA/ACCgPgDwXz8AIKA+ABBQPwDg/z4A8F8/AOD/PgAQMD8AIKA+APA/PwAgoD4AEDA/AOD/PgDwPz8A4P8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAAAEPwAAwj8AABA+AAAEPwAAwj8AABC+AAAEPwAAPD8AABA+AAAEPwAAPD8AABC+AABwPgAAwj8AABC+AABwPgAAwj8AABA+AABwPgAAPD8AABC+AABwPgAAPD8AABA+AABwPgAAwj8AABC+AAAEPwAAwj8AABC+AABwPgAAwj8AABA+AAAEPwAAwj8AABA+AABwPgAAPD8AABA+AAAEPwAAPD8AABA+AABwPgAAPD8AABC+AAAEPwAAPD8AABC+AABwPgAAwj8AABA+AAAEPwAAwj8AABA+AABwPgAAPD8AABA+AAAEPwAAPD8AABA+AAAEPwAAwj8AABC+AABwPgAAwj8AABC+AAAEPwAAPD8AABC+AABwPgAAPD8AABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAgPwAQED8A8C8/ABAQPwAQID8A8D8/APAvPwDwPz8AEEA/ABAQPwDwTz8AEBA/ABBAPwDwPz8A8E8/APA/PwDwPz8A8A8/ABAwPwDwDz8A8D8/ABAAPwAQMD8AEAA/APBPPwAQAD8AEEA/ABAAPwDwTz8A8A8/ABBAPwDwDz8AEFA/ABAQPwDwXz8AEBA/ABBQPwDwPz8A8F8/APA/PwAQMD8AEBA/APA/PwAQED8AEDA/APA/PwDwPz8A8D8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACAvgAAwD8AAAA+AACAvgAAwD8AAAC+AACAvgAAQD8AAAA+AACAvgAAQD8AAAC+AAAAvwAAwD8AAAC+AAAAvwAAwD8AAAA+AAAAvwAAQD8AAAC+AAAAvwAAQD8AAAA+AAAAvwAAwD8AAAC+AACAvgAAwD8AAAC+AAAAvwAAwD8AAAA+AACAvgAAwD8AAAA+AAAAvwAAQD8AAAA+AACAvgAAQD8AAAA+AAAAvwAAQD8AAAC+AACAvgAAQD8AAAC+AAAAvwAAwD8AAAA+AACAvgAAwD8AAAA+AAAAvwAAQD8AAAA+AACAvgAAQD8AAAA+AACAvgAAwD8AAAC+AAAAvwAAwD8AAAC+AACAvgAAQD8AAAC+AAAAvwAAQD8AAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAAPwAQUD8A8A8/ABBQPwAQAD8A8H8/APAPPwDwfz8AECA/ABBQPwDwLz8AEFA/ABAgPwDwfz8A8C8/APB/PwDwHz8A8E8/ABAQPwDwTz8A8B8/ABBAPwAQED8AEEA/APAvPwAQQD8AECA/ABBAPwDwLz8A8E8/ABAgPwDwTz8AEDA/ABBQPwDwPz8AEFA/ABAwPwDwfz8A8D8/APB/PwAQED8AEFA/APAfPwAQUD8AEBA/APB/PwDwHz8A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAABwvgAAwj8AABA+AABwvgAAwj8AABC+AABwvgAAPD8AABA+AABwvgAAPD8AABC+AAAEvwAAwj8AABC+AAAEvwAAwj8AABA+AAAEvwAAPD8AABC+AAAEvwAAPD8AABA+AAAEvwAAwj8AABC+AABwvgAAwj8AABC+AAAEvwAAwj8AABA+AABwvgAAwj8AABA+AAAEvwAAPD8AABA+AABwvgAAPD8AABA+AAAEvwAAPD8AABC+AABwvgAAPD8AABC+AAAEvwAAwj8AABA+AABwvgAAwj8AABA+AAAEvwAAPD8AABA+AABwvgAAPD8AABA+AABwvgAAwj8AABC+AAAEvwAAwj8AABC+AABwvgAAPD8AABC+AAAEvwAAPD8AABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABBAPwAQUD8A8E8/ABBQPwAQQD8A8H8/APBPPwDwfz8AEGA/ABBQPwDwbz8AEFA/ABBgPwDwfz8A8G8/APB/PwDwXz8A8E8/ABBQPwDwTz8A8F8/ABBAPwAQUD8AEEA/APBvPwAQQD8AEGA/ABBAPwDwbz8A8E8/ABBgPwDwTz8AEHA/ABBQPwDwfz8AEFA/ABBwPwDwfz8A8H8/APB/PwAQUD8AEFA/APBfPwAQUD8AEFA/APB/PwDwXz8A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAmpl5PgAAQD8AAAA+mpl5PgAAQD8AAAC+mpl5PgAAAAAAAAA+mpl5PgAAAAAAAAC+zczMuwAAQD8AAAC+zczMuwAAQD8AAAA+zczMuwAAAAAAAAC+zczMuwAAAAAAAAA+zczMuwAAQD8AAAC+mpl5PgAAQD8AAAC+zczMuwAAQD8AAAA+mpl5PgAAQD8AAAA+zczMuwAAAAAAAAA+mpl5PgAAAAAAAAA+zczMuwAAAAAAAAC+mpl5PgAAAAAAAAC+zczMuwAAQD8AAAA+mpl5PgAAQD8AAAA+zczMuwAAAAAAAAA+mpl5PgAAAAAAAAA+mpl5PgAAQD8AAAC+zczMuwAAQD8AAAC+mpl5PgAAAAAAAAC+zczMuwAAAAAAAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAgoD4AAH89ACCgPgAAgDkA4P8+AAB/PQDg/z4AQAA+ACCgPgDAPz4AIKA+AEAAPgDg/z4AwD8+AOD/PgCA/z0A4J8+AICAPQDgnz4AgP89ACCAPgCAgD0AIIA+AMA/PgAggD4AQAA+ACCAPgDAPz4A4J8+AEAAPgDgnz4AQEA+ACCgPgDAfz4AIKA+AEBAPgDg/z4AwH8+AOD/PgCAgD0AIKA+AID/PQAgoD4AgIA9AOD/PgCA/z0A4P8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAzcyEPgAARD8AABA+zcyEPgAARD8AABC+zcyEPgAAgLwAABA+zcyEPgAAgLwAABC+MzOzvAAARD8AABC+MzOzvAAARD8AABA+MzOzvAAAgLwAABC+MzOzvAAAgLwAABA+MzOzvAAARD8AABC+zcyEPgAARD8AABC+MzOzvAAARD8AABA+zcyEPgAARD8AABA+MzOzvAAAgLwAABA+zcyEPgAAgLwAABA+MzOzvAAAgLwAABC+zcyEPgAAgLwAABC+MzOzvAAARD8AABA+zcyEPgAARD8AABA+MzOzvAAAgLwAABA+zcyEPgAAgLwAABA+zcyEPgAARD8AABC+MzOzvAAARD8AABC+zcyEPgAAgLwAABC+MzOzvAAAgLwAABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAQED8AAH89ABAQPwAAgDkA8D8/AAB/PQDwPz8AQAA+ABAQPwDAPz4AEBA/AEAAPgDwPz8AwD8+APA/PwCA/z0A8A8/AICAPQDwDz8AgP89ABAAPwCAgD0AEAA/AMA/PgAQAD8AQAA+ABAAPwDAPz4A8A8/AEAAPgDwDz8AQEA+ABAQPwDAfz4AEBA/AEBAPgDwPz8AwH8+APA/PwCAgD0AEBA/AID/PQAQED8AgIA9APA/PwCA/z0A8D8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAzczMOwAAQD8AAAA+zczMOwAAQD8AAAC+zczMOwAAAAAAAAA+zczMOwAAAAAAAAC+mpl5vgAAQD8AAAC+mpl5vgAAQD8AAAA+mpl5vgAAAAAAAAC+mpl5vgAAAAAAAAA+mpl5vgAAQD8AAAC+zczMOwAAQD8AAAC+mpl5vgAAQD8AAAA+zczMOwAAQD8AAAA+mpl5vgAAAAAAAAA+zczMOwAAAAAAAAA+mpl5vgAAAAAAAAC+zczMOwAAAAAAAAC+mpl5vgAAQD8AAAA+zczMOwAAQD8AAAA+mpl5vgAAAAAAAAA+zczMOwAAAAAAAAA+zczMOwAAQD8AAAC+mpl5vgAAQD8AAAC+zczMOwAAAAAAAAC+mpl5vgAAAAAAAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ACCAPgAQUD8A4J8+ABBQPwAggD4A8H8/AOCfPgDwfz8AIMA+ABBQPwDg3z4AEFA/ACDAPgDwfz8A4N8+APB/PwDgvz4A8E8/ACCgPgDwTz8A4L8+ABBAPwAgoD4AEEA/AODfPgAQQD8AIMA+ABBAPwDg3z4A8E8/ACDAPgDwTz8AIOA+ABBQPwDg/z4AEFA/ACDgPgDwfz8A4P8+APB/PwAgoD4AEFA/AOC/PgAQUD8AIKA+APB/PwDgvz4A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAMzOzPAAARD8AABA+MzOzPAAARD8AABC+MzOzPAAAgLwAABA+MzOzPAAAgLwAABC+zcyEvgAARD8AABC+zcyEvgAARD8AABA+zcyEvgAAgLwAABC+zcyEvgAAgLwAABA+zcyEvgAARD8AABC+MzOzPAAARD8AABC+zcyEvgAARD8AABA+MzOzPAAARD8AABA+zcyEvgAAgLwAABA+MzOzPAAAgLwAABA+zcyEvgAAgLwAABC+MzOzPAAAgLwAABC+zcyEvgAARD8AABA+MzOzPAAARD8AABA+zcyEvgAAgLwAABA+MzOzPAAAgLwAABA+MzOzPAAARD8AABC+zcyEvgAARD8AABC+MzOzPAAAgLwAABC+zcyEvgAAgLwAABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAQUD8AAH89ABBQPwAAgDkA8H8/AAB/PQDwfz8AQAA+ABBQPwDAPz4AEFA/AEAAPgDwfz8AwD8+APB/PwCA/z0A8E8/AICAPQDwTz8AgP89ABBAPwCAgD0AEEA/AMA/PgAQQD8AQAA+ABBAPwDAPz4A8E8/AEAAPgDwTz8AQEA+ABBQPwDAfz4AEFA/AEBAPgDwfz8AwH8+APB/PwCAgD0AEFA/AID/PQAQUD8AgIA9APB/PwCA/z0A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA"}],"accessors":[{"bufferView":0,"componentType":5126,"count":24,"max":[0.25,2,0.25],"min":[-0.25,1.5,-0.25],"type":"VEC3"},{"bufferView":1,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":2,"componentType":5126,"count":24,"max":[0.499755859375,0.249755859375],"min":[0.000244140625,0.000244140625],"type":"VEC2"},{"bufferView":3,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":4,"componentType":5126,"count":24,"max":[0.28125,2.03125,0.28125],"min":[-0.28125,1.46875,-0.28125],"type":"VEC3"},{"bufferView":5,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":6,"componentType":5126,"count":24,"max":[0.999755859375,0.249755859375],"min":[0.500244140625,0.000244140625],"type":"VEC2"},{"bufferView":7,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":8,"componentType":5126,"count":24,"max":[0.25,1.5,0.125],"min":[-0.25,0.75,-0.125],"type":"VEC3"},{"bufferView":9,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":10,"componentType":5126,"count":24,"max":[0.624755859375,0.499755859375],"min":[0.250244140625,0.250244140625],"type":"VEC2"},{"bufferView":11,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":12,"componentType":5126,"count":24,"max":[0.265625,1.515625,0.140625],"min":[-0.265625,0.734375,-0.140625],"type":"VEC3"},{"bufferView":13,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":14,"componentType":5126,"count":24,"max":[0.624755859375,0.749755859375],"min":[0.250244140625,0.500244140625],"type":"VEC2"},{"bufferView":15,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":16,"componentType":5126,"count":24,"max":[0.5,1.5,0.125],"min":[0.25,0.75,-0.125],"type":"VEC3"},{"bufferView":17,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":18,"componentType":5126,"count":24,"max":[0.874755859375,0.499755859375],"min":[0.625244140625,0.250244140625],"type":"VEC2"},{"bufferView":19,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":20,"componentType":5126,"count":24,"max":[0.515625,1.515625,0.140625],"min":[0.234375,0.734375,-0.140625],"type":"VEC3"},{"bufferView":21,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":22,"componentType":5126,"count":24,"max":[0.874755859375,0.749755859375],"min":[0.625244140625,0.500244140625],"type":"VEC2"},{"bufferView":23,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":24,"componentType":5126,"count":24,"max":[-0.25,1.5,0.125],"min":[-0.5,0.75,-0.125],"type":"VEC3"},{"bufferView":25,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":26,"componentType":5126,"count":24,"max":[0.749755859375,0.999755859375],"min":[0.500244140625,0.750244140625],"type":"VEC2"},{"bufferView":27,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":28,"componentType":5126,"count":24,"max":[-0.234375,1.515625,0.140625],"min":[-0.515625,0.734375,-0.140625],"type":"VEC3"},{"bufferView":29,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":30,"componentType":5126,"count":24,"max":[0.999755859375,0.999755859375],"min":[0.750244140625,0.750244140625],"type":"VEC2"},{"bufferView":31,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":32,"componentType":5126,"count":24,"max":[0.24375000596046448,0.75,0.125],"min":[-0.0062500000931322575,0,-0.125],"type":"VEC3"},{"bufferView":33,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":34,"componentType":5126,"count":24,"max":[0.249755859375,0.499755859375],"min":[0.000244140625,0.250244140625],"type":"VEC2"},{"bufferView":35,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":36,"componentType":5126,"count":24,"max":[0.2593750059604645,0.765625,0.140625],"min":[-0.02187499962747097,-0.015625,-0.140625],"type":"VEC3"},{"bufferView":37,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":38,"componentType":5126,"count":24,"max":[0.249755859375,0.749755859375],"min":[0.000244140625,0.500244140625],"type":"VEC2"},{"bufferView":39,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":40,"componentType":5126,"count":24,"max":[0.0062500000931322575,0.75,0.125],"min":[-0.24375000596046448,0,-0.125],"type":"VEC3"},{"bufferView":41,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":42,"componentType":5126,"count":24,"max":[0.499755859375,0.999755859375],"min":[0.250244140625,0.750244140625],"type":"VEC2"},{"bufferView":43,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":44,"componentType":5126,"count":24,"max":[0.02187499962747097,0.765625,0.140625],"min":[-0.2593750059604645,-0.015625,-0.140625],"type":"VEC3"},{"bufferView":45,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":46,"componentType":5126,"count":24,"max":[0.249755859375,0.999755859375],"min":[0.000244140625,0.750244140625],"type":"VEC2"},{"bufferView":47,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"}],"materials":[{"pbrMetallicRoughness":{"metallicFactor":0,"roughnessFactor":1,"baseColorTexture":{"index":0}},"alphaMode":"MASK","alphaCutoff":0.05,"doubleSided":true}],"textures":[{"sampler":0,"source":0,"name":"steve.png"}],"samplers":[{"magFilter":9728,"minFilter":9728,"wrapS":33071,"wrapT":33071}],"images":[{"mimeType":"image/png","name":"steve.png","uri":"__SKIN__"}],"meshes":[{"primitives":[{"mode":4,"attributes":{"POSITION":0,"NORMAL":1,"TEXCOORD_0":2},"indices":3,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":4,"NORMAL":5,"TEXCOORD_0":6},"indices":7,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":8,"NORMAL":9,"TEXCOORD_0":10},"indices":11,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":12,"NORMAL":13,"TEXCOORD_0":14},"indices":15,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":16,"NORMAL":17,"TEXCOORD_0":18},"indices":19,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":20,"NORMAL":21,"TEXCOORD_0":22},"indices":23,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":24,"NORMAL":25,"TEXCOORD_0":26},"indices":27,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":28,"NORMAL":29,"TEXCOORD_0":30},"indices":31,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":32,"NORMAL":33,"TEXCOORD_0":34},"indices":35,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":36,"NORMAL":37,"TEXCOORD_0":38},"indices":39,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":40,"NORMAL":41,"TEXCOORD_0":42},"indices":43,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":44,"NORMAL":45,"TEXCOORD_0":46},"indices":47,"material":0}]}]}';
+const GLTF_SLIM   = '{"asset":{"version":"2.0","generator":"Blockbench 5.0.7 glTF exporter"},"scenes":[{"nodes":[12,15,18],"name":"blockbench_export"}],"scene":0,"nodes":[{"translation":[0,-1.5,0],"name":"Head","mesh":0},{"translation":[0,-1.5,0],"name":"Hat Layer","mesh":1},{"translation":[0,0.75,0],"name":"Head","children":[0,1]},{"translation":[0,-1.5,0],"name":"Body","mesh":2},{"translation":[0,-1.5,0],"name":"Body Layer","mesh":3},{"translation":[0,0.75,0],"name":"Body","children":[3,4]},{"translation":[-0.3125,-1.375,0],"name":"Right Arm","mesh":4},{"translation":[-0.3125,-1.375,0],"name":"Right Arm Layer","mesh":5},{"translation":[0.3125,0.625,0],"name":"Right Arm","children":[6,7]},{"translation":[0.3125,-1.375,0],"name":"Left Arm","mesh":6},{"translation":[0.3125,-1.375,0],"name":"Left Arm Layer","mesh":7},{"translation":[-0.3125,0.625,0],"name":"Left Arm","children":[9,10]},{"translation":[0,0.75,0],"name":"Waist","children":[2,5,8,11]},{"translation":[-0.11875,-0.75,0],"name":"Right Leg","mesh":8},{"translation":[-0.11875,-0.75,0],"name":"Right Leg Layer","mesh":9},{"translation":[0.11875,0.75,0],"name":"Right Leg","children":[13,14]},{"translation":[0.11875,-0.75,0],"name":"Left Leg","mesh":10},{"translation":[0.11875,-0.75,0],"name":"Left Leg Layer","mesh":11},{"translation":[-0.11875,0.75,0],"name":"Left Leg","children":[16,17]}],"bufferViews":[{"buffer":0,"byteOffset":0,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":288,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":576,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":768,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":840,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":1128,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":1416,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":1608,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":1680,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":1968,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":2256,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":2448,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":2520,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":2808,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":3096,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":3288,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":3360,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":3648,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":3936,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":4128,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":4200,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":4488,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":4776,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":4968,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":5040,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":5328,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":5616,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":5808,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":5880,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":6168,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":6456,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":6648,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":6720,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":7008,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":7296,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":7488,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":7560,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":7848,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":8136,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":8328,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":8400,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":8688,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":8976,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":9168,"byteLength":72,"target":34963},{"buffer":0,"byteOffset":9240,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":9528,"byteLength":288,"target":34962,"byteStride":12},{"buffer":0,"byteOffset":9816,"byteLength":192,"target":34962,"byteStride":8},{"buffer":0,"byteOffset":10008,"byteLength":72,"target":34963}],"buffers":[{"byteLength":10080,"uri":"data:application/octet-stream;base64,AACAPgAAAEAAAIA+AACAPgAAAEAAAIC+AACAPgAAwD8AAIA+AACAPgAAwD8AAIC+AACAvgAAAEAAAIC+AACAvgAAAEAAAIA+AACAvgAAwD8AAIC+AACAvgAAwD8AAIA+AACAvgAAAEAAAIC+AACAPgAAAEAAAIC+AACAvgAAAEAAAIA+AACAPgAAAEAAAIA+AACAvgAAwD8AAIA+AACAPgAAwD8AAIA+AACAvgAAwD8AAIC+AACAPgAAwD8AAIC+AACAvgAAAEAAAIA+AACAPgAAAEAAAIA+AACAvgAAwD8AAIA+AACAPgAAwD8AAIA+AACAPgAAAEAAAIC+AACAvgAAAEAAAIC+AACAPgAAwD8AAIC+AACAvgAAwD8AAIC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQBAAD4AgP89AEAAPgAAgDkAwH8+AID/PQDAfz4AIIA+AEAAPgDgvz4AQAA+ACCAPgDAfz4A4L8+AMB/PgDAfz4AgP89AEAAPgCA/z0AwH8+AACAOQBAAD4AAIA5AOC/PgAAgDkAIIA+AACAOQDgvz4AgP89ACCAPgCA/z0AIMA+AEAAPgDg/z4AQAA+ACDAPgDAfz4A4P8+AMB/PgBAAD4AQAA+AMB/PgBAAD4AQAA+AMB/PgDAfz4AwH8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACQPgAAAkAAAJA+AACQPgAAAkAAAJC+AACQPgAAvD8AAJA+AACQPgAAvD8AAJC+AACQvgAAAkAAAJC+AACQvgAAAkAAAJA+AACQvgAAvD8AAJC+AACQvgAAvD8AAJA+AACQvgAAAkAAAJC+AACQPgAAAkAAAJC+AACQvgAAAkAAAJA+AACQPgAAAkAAAJA+AACQvgAAvD8AAJA+AACQPgAAvD8AAJA+AACQvgAAvD8AAJC+AACQPgAAvD8AAJC+AACQvgAAAkAAAJA+AACQPgAAAkAAAJA+AACQvgAAvD8AAJA+AACQPgAAvD8AAJA+AACQPgAAAkAAAJC+AACQvgAAAkAAAJC+AACQPgAAvD8AAJC+AACQvgAAvD8AAJC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAAPwBAAD4A8B8/AEAAPgAQAD8AwH8+APAfPwDAfz4AEEA/AEAAPgDwXz8AQAA+ABBAPwDAfz4A8F8/AMB/PgDwPz8AgP89ABAgPwCA/z0A8D8/AACAOQAQID8AAIA5APBfPwAAgDkAEEA/AACAOQDwXz8AgP89ABBAPwCA/z0AEGA/AEAAPgDwfz8AQAA+ABBgPwDAfz4A8H8/AMB/PgAQID8AQAA+APA/PwBAAD4AECA/AMB/PgDwPz8AwH8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACAPgAAwD8AAAA+AACAPgAAwD8AAAC+AACAPgAAQD8AAAA+AACAPgAAQD8AAAC+AACAvgAAwD8AAAC+AACAvgAAwD8AAAA+AACAvgAAQD8AAAC+AACAvgAAQD8AAAA+AACAvgAAwD8AAAC+AACAPgAAwD8AAAC+AACAvgAAwD8AAAA+AACAPgAAwD8AAAA+AACAvgAAQD8AAAA+AACAPgAAQD8AAAA+AACAvgAAQD8AAAC+AACAPgAAQD8AAAC+AACAvgAAwD8AAAA+AACAPgAAwD8AAAA+AACAvgAAQD8AAAA+AACAPgAAQD8AAAA+AACAPgAAwD8AAAC+AACAvgAAwD8AAAC+AACAPgAAQD8AAAC+AACAvgAAQD8AAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ACCAPgAgoD4A4J8+ACCgPgAggD4A4P8+AOCfPgDg/z4AIOA+ACCgPgDg/z4AIKA+ACDgPgDg/z4A4P8+AOD/PgDg3z4A4J8+ACCgPgDgnz4A4N8+ACCAPgAgoD4AIIA+APAPPwAggD4AIOA+ACCAPgDwDz8A4J8+ACDgPgDgnz4AEAA/ACCgPgDwHz8AIKA+ABAAPwDg/z4A8B8/AOD/PgAgoD4AIKA+AODfPgAgoD4AIKA+AOD/PgDg3z4A4P8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACIPgAAwj8AABA+AACIPgAAwj8AABC+AACIPgAAPD8AABA+AACIPgAAPD8AABC+AACIvgAAwj8AABC+AACIvgAAwj8AABA+AACIvgAAPD8AABC+AACIvgAAPD8AABA+AACIvgAAwj8AABC+AACIPgAAwj8AABC+AACIvgAAwj8AABA+AACIPgAAwj8AABA+AACIvgAAPD8AABA+AACIPgAAPD8AABA+AACIvgAAPD8AABC+AACIPgAAPD8AABC+AACIvgAAwj8AABA+AACIPgAAwj8AABA+AACIvgAAPD8AABA+AACIPgAAPD8AABA+AACIPgAAwj8AABC+AACIvgAAwj8AABC+AACIPgAAPD8AABC+AACIvgAAPD8AABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ACCAPgAQED8A4J8+ABAQPwAggD4A8D8/AOCfPgDwPz8AIOA+ABAQPwDg/z4AEBA/ACDgPgDwPz8A4P8+APA/PwDg3z4A8A8/ACCgPgDwDz8A4N8+ABAAPwAgoD4AEAA/APAPPwAQAD8AIOA+ABAAPwDwDz8A8A8/ACDgPgDwDz8AEAA/ABAQPwDwHz8AEBA/ABAAPwDwPz8A8B8/APA/PwAgoD4AEBA/AODfPgAQED8AIKA+APA/PwDg3z4A8D8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAADgPgAAwD8AAAA+AADgPgAAwD8AAAC+AADgPgAAQD8AAAA+AADgPgAAQD8AAAC+AACAPgAAwD8AAAC+AACAPgAAwD8AAAA+AACAPgAAQD8AAAC+AACAPgAAQD8AAAA+AACAPgAAwD8AAAC+AADgPgAAwD8AAAC+AACAPgAAwD8AAAA+AADgPgAAwD8AAAA+AACAPgAAQD8AAAA+AADgPgAAQD8AAAA+AACAPgAAQD8AAAC+AADgPgAAQD8AAAC+AACAPgAAwD8AAAA+AADgPgAAwD8AAAA+AACAPgAAQD8AAAA+AADgPgAAQD8AAAA+AADgPgAAwD8AAAC+AACAPgAAwD8AAAC+AADgPgAAQD8AAAC+AACAPgAAQD8AAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAgPwAgoD4A8C8/ACCgPgAQID8A4P8+APAvPwDg/z4AEDw/ACCgPgDwSz8AIKA+ABA8PwDg/z4A8Es/AOD/PgDwOz8A4J8+ABAwPwDgnz4A8Ds/ACCAPgAQMD8AIIA+APBHPwAggD4AEDw/ACCAPgDwRz8A4J8+ABA8PwDgnz4AEEw/ACCgPgDwVz8AIKA+ABBMPwDg/z4A8Fc/AOD/PgAQMD8AIKA+APA7PwAgoD4AEDA/AOD/PgDwOz8A4P8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAADoPgAAwj8AABA+AADoPgAAwj8AABC+AADoPgAAPD8AABA+AADoPgAAPD8AABC+AABwPgAAwj8AABC+AABwPgAAwj8AABA+AABwPgAAPD8AABC+AABwPgAAPD8AABA+AABwPgAAwj8AABC+AADoPgAAwj8AABC+AABwPgAAwj8AABA+AADoPgAAwj8AABA+AABwPgAAPD8AABA+AADoPgAAPD8AABA+AABwPgAAPD8AABC+AADoPgAAPD8AABC+AABwPgAAwj8AABA+AADoPgAAwj8AABA+AABwPgAAPD8AABA+AADoPgAAPD8AABA+AADoPgAAwj8AABC+AABwPgAAwj8AABC+AADoPgAAPD8AABC+AABwPgAAPD8AABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAgPwAQED8A8C8/ABAQPwAQID8A8D8/APAvPwDwPz8AEDw/ABAQPwDwSz8AEBA/ABA8PwDwPz8A8Es/APA/PwDwOz8A8A8/ABAwPwDwDz8A8Ds/ABAAPwAQMD8AEAA/APBHPwAQAD8AEDw/ABAAPwDwRz8A8A8/ABA8PwDwDz8AEEw/ABAQPwDwVz8AEBA/ABBMPwDwPz8A8Fc/APA/PwAQMD8AEBA/APA7PwAQED8AEDA/APA/PwDwOz8A8D8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACAvgAAwD8AAAA+AACAvgAAwD8AAAC+AACAvgAAQD8AAAA+AACAvgAAQD8AAAC+AADgvgAAwD8AAAC+AADgvgAAwD8AAAA+AADgvgAAQD8AAAC+AADgvgAAQD8AAAA+AADgvgAAwD8AAAC+AACAvgAAwD8AAAC+AADgvgAAwD8AAAA+AACAvgAAwD8AAAA+AADgvgAAQD8AAAA+AACAvgAAQD8AAAA+AADgvgAAQD8AAAC+AACAvgAAQD8AAAC+AADgvgAAwD8AAAA+AACAvgAAwD8AAAA+AADgvgAAQD8AAAA+AACAvgAAQD8AAAA+AACAvgAAwD8AAAC+AADgvgAAwD8AAAC+AACAvgAAQD8AAAC+AADgvgAAQD8AAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABAAPwAQUD8A8A8/ABBQPwAQAD8A8H8/APAPPwDwfz8AEBw/ABBQPwDwKz8AEFA/ABAcPwDwfz8A8Cs/APB/PwDwGz8A8E8/ABAQPwDwTz8A8Bs/ABBAPwAQED8AEEA/APAnPwAQQD8AEBw/ABBAPwDwJz8A8E8/ABAcPwDwTz8AECw/ABBQPwDwNz8AEFA/ABAsPwDwfz8A8Dc/APB/PwAQED8AEFA/APAbPwAQUD8AEBA/APB/PwDwGz8A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAABwvgAAwj8AABA+AABwvgAAwj8AABC+AABwvgAAPD8AABA+AABwvgAAPD8AABC+AADovgAAwj8AABC+AADovgAAwj8AABA+AADovgAAPD8AABC+AADovgAAPD8AABA+AADovgAAwj8AABC+AABwvgAAwj8AABC+AADovgAAwj8AABA+AABwvgAAwj8AABA+AADovgAAPD8AABA+AABwvgAAPD8AABA+AADovgAAPD8AABC+AABwvgAAPD8AABC+AADovgAAwj8AABA+AABwvgAAwj8AABA+AADovgAAPD8AABA+AABwvgAAPD8AABA+AABwvgAAwj8AABC+AADovgAAwj8AABC+AABwvgAAPD8AABC+AADovgAAPD8AABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ABBAPwAQUD8A8E8/ABBQPwAQQD8A8H8/APBPPwDwfz8AEFw/ABBQPwDwaz8AEFA/ABBcPwDwfz8A8Gs/APB/PwDwWz8A8E8/ABBQPwDwTz8A8Fs/ABBAPwAQUD8AEEA/APBnPwAQQD8AEFw/ABBAPwDwZz8A8E8/ABBcPwDwTz8AEGw/ABBQPwDwdz8AEFA/ABBsPwDwfz8A8Hc/APB/PwAQUD8AEFA/APBbPwAQUD8AEFA/APB/PwDwWz8A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAmpl5PgAAQD8AAAA+mpl5PgAAQD8AAAC+mpl5PgAAAAAAAAA+mpl5PgAAAAAAAAC+zczMuwAAQD8AAAC+zczMuwAAQD8AAAA+zczMuwAAAAAAAAC+zczMuwAAAAAAAAA+zczMuwAAQD8AAAC+mpl5PgAAQD8AAAC+zczMuwAAQD8AAAA+mpl5PgAAQD8AAAA+zczMuwAAAAAAAAA+mpl5PgAAAAAAAAA+zczMuwAAAAAAAAC+mpl5PgAAAAAAAAC+zczMuwAAQD8AAAA+mpl5PgAAQD8AAAA+zczMuwAAAAAAAAA+mpl5PgAAAAAAAAA+mpl5PgAAQD8AAAC+zczMuwAAQD8AAAC+mpl5PgAAAAAAAAC+zczMuwAAAAAAAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAgoD4AAH89ACCgPgAAgDkA4P8+AAB/PQDg/z4AQAA+ACCgPgDAPz4AIKA+AEAAPgDg/z4AwD8+AOD/PgCA/z0A4J8+AICAPQDgnz4AgP89ACCAPgCAgD0AIIA+AMA/PgAggD4AQAA+ACCAPgDAPz4A4J8+AEAAPgDgnz4AQEA+ACCgPgDAfz4AIKA+AEBAPgDg/z4AwH8+AOD/PgCAgD0AIKA+AID/PQAgoD4AgIA9AOD/PgCA/z0A4P8+AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAzcyEPgAARD8AABA+zcyEPgAARD8AABC+zcyEPgAAgLwAABA+zcyEPgAAgLwAABC+MzOzvAAARD8AABC+MzOzvAAARD8AABA+MzOzvAAAgLwAABC+MzOzvAAAgLwAABA+MzOzvAAARD8AABC+zcyEPgAARD8AABC+MzOzvAAARD8AABA+zcyEPgAARD8AABA+MzOzvAAAgLwAABA+zcyEPgAAgLwAABA+MzOzvAAAgLwAABC+zcyEPgAAgLwAABC+MzOzvAAARD8AABA+zcyEPgAARD8AABA+MzOzvAAAgLwAABA+zcyEPgAAgLwAABA+zcyEPgAARD8AABC+MzOzvAAARD8AABC+zcyEPgAAgLwAABC+MzOzvAAAgLwAABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAQED8AAH89ABAQPwAAgDkA8D8/AAB/PQDwPz8AQAA+ABAQPwDAPz4AEBA/AEAAPgDwPz8AwD8+APA/PwCA/z0A8A8/AICAPQDwDz8AgP89ABAAPwCAgD0AEAA/AMA/PgAQAD8AQAA+ABAAPwDAPz4A8A8/AEAAPgDwDz8AQEA+ABAQPwDAfz4AEBA/AEBAPgDwPz8AwH8+APA/PwCAgD0AEBA/AID/PQAQED8AgIA9APA/PwCA/z0A8D8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAzczMOwAAQD8AAAA+zczMOwAAQD8AAAC+zczMOwAAAAAAAAA+zczMOwAAAAAAAAC+mpl5vgAAQD8AAAC+mpl5vgAAQD8AAAA+mpl5vgAAAAAAAAC+mpl5vgAAAAAAAAA+mpl5vgAAQD8AAAC+zczMOwAAQD8AAAC+mpl5vgAAQD8AAAA+zczMOwAAQD8AAAA+mpl5vgAAAAAAAAA+zczMOwAAAAAAAAA+mpl5vgAAAAAAAAC+zczMOwAAAAAAAAC+mpl5vgAAQD8AAAA+zczMOwAAQD8AAAA+mpl5vgAAAAAAAAA+zczMOwAAAAAAAAA+zczMOwAAQD8AAAC+mpl5vgAAQD8AAAC+zczMOwAAAAAAAAC+mpl5vgAAAAAAAAC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/ACCAPgAQUD8A4J8+ABBQPwAggD4A8H8/AOCfPgDwfz8AIMA+ABBQPwDg3z4AEFA/ACDAPgDwfz8A4N8+APB/PwDgvz4A8E8/ACCgPgDwTz8A4L8+ABBAPwAgoD4AEEA/AODfPgAQQD8AIMA+ABBAPwDg3z4A8E8/ACDAPgDwTz8AIOA+ABBQPwDg/z4AEFA/ACDgPgDwfz8A4P8+APB/PwAgoD4AEFA/AOC/PgAQUD8AIKA+APB/PwDgvz4A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAMzOzPAAARD8AABA+MzOzPAAARD8AABC+MzOzPAAAgLwAABA+MzOzPAAAgLwAABC+zcyEvgAARD8AABC+zcyEvgAARD8AABA+zcyEvgAAgLwAABC+zcyEvgAAgLwAABA+zcyEvgAARD8AABC+MzOzPAAARD8AABC+zcyEvgAARD8AABA+MzOzPAAARD8AABA+zcyEvgAAgLwAABA+MzOzPAAAgLwAABA+zcyEvgAAgLwAABC+MzOzPAAAgLwAABC+zcyEvgAARD8AABA+MzOzPAAARD8AABA+zcyEvgAAgLwAABA+MzOzPAAAgLwAABA+MzOzPAAARD8AABC+zcyEvgAARD8AABC+MzOzPAAAgLwAABC+zcyEvgAAgLwAABC+AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AACAOQAQUD8AAH89ABBQPwAAgDkA8H8/AAB/PQDwfz8AQAA+ABBQPwDAPz4AEFA/AEAAPgDwfz8AwD8+APB/PwCA/z0A8E8/AICAPQDwTz8AgP89ABBAPwCAgD0AEEA/AMA/PgAQQD8AQAA+ABBAPwDAPz4A8E8/AEAAPgDwTz8AQEA+ABBQPwDAfz4AEFA/AEBAPgDwfz8AwH8+APB/PwCAgD0AEFA/AID/PQAQUD8AgIA9APB/PwCA/z0A8H8/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUA"}],"accessors":[{"bufferView":0,"componentType":5126,"count":24,"max":[0.25,2,0.25],"min":[-0.25,1.5,-0.25],"type":"VEC3"},{"bufferView":1,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":2,"componentType":5126,"count":24,"max":[0.499755859375,0.249755859375],"min":[0.000244140625,0.000244140625],"type":"VEC2"},{"bufferView":3,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":4,"componentType":5126,"count":24,"max":[0.28125,2.03125,0.28125],"min":[-0.28125,1.46875,-0.28125],"type":"VEC3"},{"bufferView":5,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":6,"componentType":5126,"count":24,"max":[0.999755859375,0.249755859375],"min":[0.500244140625,0.000244140625],"type":"VEC2"},{"bufferView":7,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":8,"componentType":5126,"count":24,"max":[0.25,1.5,0.125],"min":[-0.25,0.75,-0.125],"type":"VEC3"},{"bufferView":9,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":10,"componentType":5126,"count":24,"max":[0.624755859375,0.499755859375],"min":[0.250244140625,0.250244140625],"type":"VEC2"},{"bufferView":11,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":12,"componentType":5126,"count":24,"max":[0.265625,1.515625,0.140625],"min":[-0.265625,0.734375,-0.140625],"type":"VEC3"},{"bufferView":13,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":14,"componentType":5126,"count":24,"max":[0.624755859375,0.749755859375],"min":[0.250244140625,0.500244140625],"type":"VEC2"},{"bufferView":15,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":16,"componentType":5126,"count":24,"max":[0.4375,1.5,0.125],"min":[0.25,0.75,-0.125],"type":"VEC3"},{"bufferView":17,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":18,"componentType":5126,"count":24,"max":[0.843505859375,0.499755859375],"min":[0.625244140625,0.250244140625],"type":"VEC2"},{"bufferView":19,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":20,"componentType":5126,"count":24,"max":[0.453125,1.515625,0.140625],"min":[0.234375,0.734375,-0.140625],"type":"VEC3"},{"bufferView":21,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":22,"componentType":5126,"count":24,"max":[0.843505859375,0.749755859375],"min":[0.625244140625,0.500244140625],"type":"VEC2"},{"bufferView":23,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":24,"componentType":5126,"count":24,"max":[-0.25,1.5,0.125],"min":[-0.4375,0.75,-0.125],"type":"VEC3"},{"bufferView":25,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":26,"componentType":5126,"count":24,"max":[0.718505859375,0.999755859375],"min":[0.500244140625,0.750244140625],"type":"VEC2"},{"bufferView":27,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":28,"componentType":5126,"count":24,"max":[-0.234375,1.515625,0.140625],"min":[-0.453125,0.734375,-0.140625],"type":"VEC3"},{"bufferView":29,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":30,"componentType":5126,"count":24,"max":[0.968505859375,0.999755859375],"min":[0.750244140625,0.750244140625],"type":"VEC2"},{"bufferView":31,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":32,"componentType":5126,"count":24,"max":[0.24375000596046448,0.75,0.125],"min":[-0.0062500000931322575,0,-0.125],"type":"VEC3"},{"bufferView":33,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":34,"componentType":5126,"count":24,"max":[0.249755859375,0.499755859375],"min":[0.000244140625,0.250244140625],"type":"VEC2"},{"bufferView":35,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":36,"componentType":5126,"count":24,"max":[0.2593750059604645,0.765625,0.140625],"min":[-0.02187499962747097,-0.015625,-0.140625],"type":"VEC3"},{"bufferView":37,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":38,"componentType":5126,"count":24,"max":[0.249755859375,0.749755859375],"min":[0.000244140625,0.500244140625],"type":"VEC2"},{"bufferView":39,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":40,"componentType":5126,"count":24,"max":[0.0062500000931322575,0.75,0.125],"min":[-0.24375000596046448,0,-0.125],"type":"VEC3"},{"bufferView":41,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":42,"componentType":5126,"count":24,"max":[0.499755859375,0.999755859375],"min":[0.250244140625,0.750244140625],"type":"VEC2"},{"bufferView":43,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"},{"bufferView":44,"componentType":5126,"count":24,"max":[0.02187499962747097,0.765625,0.140625],"min":[-0.2593750059604645,-0.015625,-0.140625],"type":"VEC3"},{"bufferView":45,"componentType":5126,"count":24,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":46,"componentType":5126,"count":24,"max":[0.249755859375,0.999755859375],"min":[0.000244140625,0.750244140625],"type":"VEC2"},{"bufferView":47,"componentType":5123,"count":36,"max":[23],"min":[0],"type":"SCALAR"}],"materials":[{"pbrMetallicRoughness":{"metallicFactor":0,"roughnessFactor":1,"baseColorTexture":{"index":0}},"alphaMode":"MASK","alphaCutoff":0.05,"doubleSided":true}],"textures":[{"sampler":0,"source":0,"name":"alex.png"}],"samplers":[{"magFilter":9728,"minFilter":9728,"wrapS":33071,"wrapT":33071}],"images":[{"mimeType":"image/png","name":"alex.png","uri":"__SKIN__"}],"meshes":[{"primitives":[{"mode":4,"attributes":{"POSITION":0,"NORMAL":1,"TEXCOORD_0":2},"indices":3,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":4,"NORMAL":5,"TEXCOORD_0":6},"indices":7,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":8,"NORMAL":9,"TEXCOORD_0":10},"indices":11,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":12,"NORMAL":13,"TEXCOORD_0":14},"indices":15,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":16,"NORMAL":17,"TEXCOORD_0":18},"indices":19,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":20,"NORMAL":21,"TEXCOORD_0":22},"indices":23,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":24,"NORMAL":25,"TEXCOORD_0":26},"indices":27,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":28,"NORMAL":29,"TEXCOORD_0":30},"indices":31,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":32,"NORMAL":33,"TEXCOORD_0":34},"indices":35,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":36,"NORMAL":37,"TEXCOORD_0":38},"indices":39,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":40,"NORMAL":41,"TEXCOORD_0":42},"indices":43,"material":0}]},{"primitives":[{"mode":4,"attributes":{"POSITION":44,"NORMAL":45,"TEXCOORD_0":46},"indices":47,"material":0}]}]}';
+
 (function(){
 'use strict';
 
-// ─── STATE ──────────────────────────────────────────────────────────
-const state = {
-  skinLoaded: false,
-  arm: 'left',
-  leftItem: null, rightItem: null,
-  headOnly: false,
-  wireframe: false,
-  fx: {
-    outline: false, outlineThick: 3, outlineColor: '#000000', outlineStyle: 'solid', outlineOpacity: 1,
-    sss: false, sssStrength: 0.4, sssRadius: 0.3, sssDistortion: 0.2, sssAmbient: 0.1, sssColor: '#ff6666',
-    toon: false, toonSteps: 4,
-    bloom: false, bloomStrength: 0.3
-  },
-  scene: {
-    ambient: 0.4, dlight: 0.6, lightColor: '#ffffff',
-    bgEnabled: false, bg1: '#1a1a2e', bg2: '#16213e',
-    floorEnabled: false, floorColor: '#ffffff',
-    fov: 45,
-    sunX: 1, sunZ: -1
-  },
-  pose: {
-    model: [0,0,0], head: [0,0,0], body: [0,0,0],
-    larm: [0,0,0,0], rarm: [0,0,0,0],
-    lleg: [0,0,0], rleg: [0,0,0]
-  }
+// ── STATE ────────────────────────────────────────────────────────────
+const S = {
+  arm:'left', leftItem:null, rightItem:null,
+  headOnly:false, slim:false, wireframe:false,
+  skinUrl:null,
+  pose:{model:[0,0,0],head:[0,0,0],body:[0,0,0],larm:[0,0,0,0],rarm:[0,0,0,0],lleg:[0,0,0],rleg:[0,0,0]},
+  scene:{ambient:.4,dlight:.7,lightColor:'#ffffff',bg:false,bg1:'#dde6f0',bg2:'#f0f4f8',floor:false,fov:45,sunX:1,sunY:2,sunZ:-1,quality:1,shadow:true},
+  fx:{outline:false,outThick:3,outColor:'#000000',outStyle:'solid',outOpacity:1,
+      sss:false,sssStr:.4,sssRad:.3,sssDis:.2,sssAmb:.1,sssColor:'#ff6666',
+      toon:false,toonSteps:4}
 };
 
-// ─── THREE SCENE SETUP ──────────────────────────────────────────────
-let renderer, scene, camera, controls;
-let skinMesh = null, outlineMesh = null;
-let ambientLight, dirLight;
-let floorMesh, bgMesh;
-let animId = null;
-let skinTexture = null;
-let parts = {};
+// ── THREE SETUP ──────────────────────────────────────────────────────
+let renderer,scene,camera,ambLight,dirLight,floorMesh,model,skinTex;
+let rotX=10,rotY=20,panX=0,panY=0,zoom=3.2;
+let time=0;
+const DEG=THREE.MathUtils.degToRad;
 
-function initThree() {
-  const canvas = document.getElementById('main-canvas');
-  const wrap = document.getElementById('canvas-container');
+function init3D(){
+  const canvas=document.getElementById('main-canvas');
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio*S.scene.quality,2));
+  renderer.shadowMap.enabled=S.scene.shadow;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputEncoding=THREE.sRGBEncoding;
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,1,.1,100);
+  camera.position.set(0,0,4);
 
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0, 4);
+  ambLight=new THREE.AmbientLight(0xffffff,S.scene.ambient);
+  scene.add(ambLight);
 
-  // Lights
-  ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-  scene.add(ambientLight);
-  dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-  dirLight.position.set(3, 3, 3);
-  dirLight.castShadow = true;
-  dirLight.shadow.mapSize.set(2048, 2048);
+  dirLight=new THREE.DirectionalLight(0xffffff,S.scene.dlight);
+  dirLight.position.set(S.scene.sunX,S.scene.sunY,S.scene.sunZ);
+  dirLight.castShadow=true;
+  dirLight.shadow.mapSize.set(1024,1024);
+  dirLight.shadow.camera.near=0.1;
+  dirLight.shadow.camera.far=20;
+  [-2,2].forEach(v=>{dirLight.shadow.camera.left=v<0?v:undefined;dirLight.shadow.camera.right=v>0?v:undefined;});
+  dirLight.shadow.camera.left=-3;dirLight.shadow.camera.right=3;
+  dirLight.shadow.camera.top=4;dirLight.shadow.camera.bottom=-4;
   scene.add(dirLight);
 
-  // Floor
-  const floorGeo = new THREE.PlaneGeometry(10, 10);
-  const floorMat = new THREE.ShadowMaterial({ opacity: 0.3 });
-  floorMesh = new THREE.Mesh(floorGeo, floorMat);
-  floorMesh.rotation.x = -Math.PI / 2;
-  floorMesh.position.y = -1.5;
-  floorMesh.receiveShadow = true;
-  floorMesh.visible = false;
+  // Floor (shadow receiver)
+  const fg=new THREE.PlaneGeometry(10,10);
+  const fm=new THREE.ShadowMaterial({opacity:.25});
+  floorMesh=new THREE.Mesh(fg,fm);
+  floorMesh.rotation.x=-Math.PI/2;
+  floorMesh.position.y=-1.6;
+  floorMesh.receiveShadow=true;
+  floorMesh.visible=false;
   scene.add(floorMesh);
 
-  setSize();
-  window.addEventListener('resize', setSize);
-
-  initOrbitControls(canvas);
-  startLoop();
-}
-
-function setSize() {
-  const wrap = document.getElementById('canvas-container');
-  if (!wrap.style.display || wrap.style.display === 'none') return;
-  const parent = wrap.parentElement;
-  const w = Math.min(parent.clientWidth - 40, 560);
-  const h = Math.min(parent.clientHeight - 40, 560);
-  const size = Math.min(w, h);
-  renderer.setSize(size, size);
-  camera.aspect = 1;
-  camera.fov = state.scene.fov;
-  camera.updateProjectionMatrix();
-}
-
-// ─── ORBIT CONTROLS (manual) ────────────────────────────────────────
-let isMouseDown = false, lastX = 0, lastY = 0, mouseBtn = 0;
-let rotX = 0, rotY = 0, panX = 0, panY = 0, zoom = 4;
-let isTouch = false;
-
-function initOrbitControls(canvas) {
-  canvas.addEventListener('mousedown', e => { isMouseDown = true; mouseBtn = e.button; lastX = e.clientX; lastY = e.clientY; e.preventDefault(); });
-  window.addEventListener('mouseup', () => { isMouseDown = false; });
-  window.addEventListener('mousemove', e => {
-    if (!isMouseDown) return;
-    const dx = e.clientX - lastX, dy = e.clientY - lastY;
-    lastX = e.clientX; lastY = e.clientY;
-    if (mouseBtn === 0) { rotY += dx * 0.5; rotX += dy * 0.5; rotX = Math.max(-89, Math.min(89, rotX)); }
-    else if (mouseBtn === 2) { panX += dx * 0.003; panY -= dy * 0.003; }
-  });
-  canvas.addEventListener('wheel', e => {
-    zoom += e.deltaY * 0.005;
-    zoom = Math.max(1, Math.min(10, zoom));
-    e.preventDefault();
-  }, { passive: false });
-  canvas.addEventListener('contextmenu', e => e.preventDefault());
-
-  // Touch
-  let lastTouchDist = 0;
-  canvas.addEventListener('touchstart', e => {
-    isTouch = true;
-    if (e.touches.length === 1) { lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      lastTouchDist = Math.sqrt(dx*dx + dy*dy);
-    }
-    e.preventDefault();
-  }, { passive: false });
-  canvas.addEventListener('touchmove', e => {
-    if (e.touches.length === 1) {
-      const dx = e.touches[0].clientX - lastX, dy = e.touches[0].clientY - lastY;
-      lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
-      rotY += dx * 0.5; rotX += dy * 0.5;
-      rotX = Math.max(-89, Math.min(89, rotX));
-    }
-    if (e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      zoom -= (dist - lastTouchDist) * 0.01;
-      zoom = Math.max(1, Math.min(10, zoom));
-      lastTouchDist = dist;
-    }
-    e.preventDefault();
-  }, { passive: false });
-}
-
-function updateCamera() {
-  const phi = THREE.MathUtils.degToRad(rotX);
-  const theta = THREE.MathUtils.degToRad(rotY);
-  camera.position.x = zoom * Math.cos(phi) * Math.sin(theta) + panX;
-  camera.position.y = zoom * Math.sin(phi) + panY;
-  camera.position.z = zoom * Math.cos(phi) * Math.cos(theta);
-  camera.lookAt(panX, panY, 0);
-}
-
-// ─── SKIN MATERIALS ─────────────────────────────────────────────────
-function createSSSMaterial(tex) {
-  const s = state.fx;
-  const sc = new THREE.Color(s.sssColor);
-
-  if (s.sss) {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        map: { value: tex },
-        lightPos: { value: dirLight.position },
-        cameraPos: { value: camera.position },
-        sssStrength: { value: s.sssStrength },
-        sssRadius: { value: s.sssRadius },
-        sssDistortion: { value: s.sssDistortion },
-        sssAmbient: { value: s.sssAmbient },
-        sssColor: { value: new THREE.Vector3(sc.r, sc.g, sc.b) },
-        ambientIntensity: { value: state.scene.ambient },
-        lightIntensity: { value: state.scene.dlight },
-        toonEnabled: { value: s.toon ? 1 : 0 },
-        toonSteps: { value: s.toonSteps },
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        varying vec3 vNormal;
-        varying vec3 vWorldPos;
-        void main() {
-          vUv = uv;
-          vNormal = normalize(normalMatrix * normal);
-          vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D map;
-        uniform vec3 lightPos;
-        uniform vec3 cameraPos;
-        uniform float sssStrength;
-        uniform float sssRadius;
-        uniform float sssDistortion;
-        uniform float sssAmbient;
-        uniform vec3 sssColor;
-        uniform float ambientIntensity;
-        uniform float lightIntensity;
-        uniform int toonEnabled;
-        uniform float toonSteps;
-        varying vec2 vUv;
-        varying vec3 vNormal;
-        varying vec3 vWorldPos;
-
-        float toonRamp(float v, float steps) {
-          return floor(v * steps) / steps;
-        }
-
-        void main() {
-          vec4 texColor = texture2D(map, vUv);
-          if (texColor.a < 0.01) discard;
-
-          vec3 L = normalize(lightPos - vWorldPos);
-          vec3 V = normalize(cameraPos - vWorldPos);
-          vec3 N = normalize(vNormal);
-
-          // Diffuse (wrap lighting for SSS)
-          float NdotL = max(0.0, dot(N, L));
-          float wrap = (NdotL + sssRadius) / (1.0 + sssRadius);
-          float diffuse = max(0.0, wrap);
-
-          // Translucency
-          vec3 Lscatter = normalize(L + N * sssDistortion);
-          float VdotL = pow(max(0.0, dot(V, -Lscatter)), 4.0) * sssStrength;
-          float translucency = (VdotL + sssAmbient) * sssStrength;
-
-          // SSS contribution
-          vec3 sss = translucency * sssColor * lightIntensity;
-
-          float d = diffuse * lightIntensity;
-          if (toonEnabled == 1) {
-            d = toonRamp(d, toonSteps);
-          }
-
-          vec3 color = texColor.rgb * (ambientIntensity + d) + sss;
-          gl_FragColor = vec4(color, texColor.a);
-        }
-      `,
-      side: THREE.FrontSide,
-      transparent: true,
-      alphaTest: 0.01,
-    });
-  }
-
-  if (s.toon) {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        map: { value: tex },
-        lightPos: { value: dirLight.position },
-        cameraPos: { value: camera.position },
-        ambientIntensity: { value: state.scene.ambient },
-        lightIntensity: { value: state.scene.dlight },
-        toonSteps: { value: s.toonSteps },
-      },
-      vertexShader: `
-        varying vec2 vUv; varying vec3 vNormal; varying vec3 vWorldPos;
-        void main() {
-          vUv = uv; vNormal = normalize(normalMatrix * normal);
-          vWorldPos = (modelMatrix * vec4(position,1.0)).xyz;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D map; uniform vec3 lightPos; uniform vec3 cameraPos;
-        uniform float ambientIntensity; uniform float lightIntensity; uniform float toonSteps;
-        varying vec2 vUv; varying vec3 vNormal; varying vec3 vWorldPos;
-        void main() {
-          vec4 tc = texture2D(map, vUv);
-          if (tc.a < 0.01) discard;
-          vec3 N = normalize(vNormal);
-          vec3 L = normalize(lightPos - vWorldPos);
-          float NdotL = max(0.0, dot(N,L));
-          float stepped = floor(NdotL * toonSteps) / toonSteps;
-          vec3 col = tc.rgb * (ambientIntensity + stepped * lightIntensity);
-          gl_FragColor = vec4(col, tc.a);
-        }
-      `,
-      side: THREE.FrontSide, transparent: true, alphaTest: 0.01,
-    });
-  }
-
-  // Standard material
-  const mat = new THREE.MeshLambertMaterial({ map: tex, side: THREE.FrontSide, transparent: true, alphaTest: 0.01 });
-  return mat;
-}
-
-function createOutlineMaterial() {
-  const c = new THREE.Color(state.fx.outlineColor);
-  const thick = state.fx.outlineThick * 0.01;
-  const op = state.fx.outlineOpacity / 100;
-
-  if (state.fx.outlineStyle === 'glow') {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        outlineColor: { value: new THREE.Vector3(c.r, c.g, c.b) },
-        thickness: { value: thick },
-        opacity: { value: op },
-      },
-      vertexShader: `
-        uniform float thickness;
-        void main() {
-          vec3 pos = position + normal * thickness;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 outlineColor; uniform float opacity;
-        void main() {
-          gl_FragColor = vec4(outlineColor * 1.5, opacity);
-        }
-      `,
-      side: THREE.BackSide, transparent: true,
-    });
-  }
-
-  if (state.fx.outlineStyle === 'sketch') {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        outlineColor: { value: new THREE.Vector3(c.r, c.g, c.b) },
-        thickness: { value: thick },
-        opacity: { value: op },
-        time: { value: 0 },
-      },
-      vertexShader: `
-        uniform float thickness; uniform float time;
-        void main() {
-          float noise = sin(position.x * 20.0 + time) * 0.002 + cos(position.y * 20.0 + time * 1.3) * 0.002;
-          vec3 pos = position + normal * (thickness + noise);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform vec3 outlineColor; uniform float opacity;
-        void main() {
-          gl_FragColor = vec4(outlineColor, opacity);
-        }
-      `,
-      side: THREE.BackSide, transparent: true,
-    });
-  }
-
-  return new THREE.ShaderMaterial({
-    uniforms: {
-      outlineColor: { value: new THREE.Vector3(c.r, c.g, c.b) },
-      thickness: { value: thick },
-      opacity: { value: op },
-    },
-    vertexShader: `
-      uniform float thickness;
-      void main() {
-        vec3 pos = position + normal * thickness;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-      }
-    `,
-    fragmentShader: `
-      uniform vec3 outlineColor; uniform float opacity;
-      void main() {
-        gl_FragColor = vec4(outlineColor, opacity);
-      }
-    `,
-    side: THREE.BackSide, transparent: true,
-  });
-}
-
-// ─── BUILD MINECRAFT MODEL ───────────────────────────────────────────
-const UV = {
-  // [texW, texH, offsetX, offsetY, faceW, faceH]
-  head:     [64, 64, 0, 48, 8, 8],
-  outer:    [64, 64, 32, 48, 8, 8],
-  body:     [64, 64, 16, 32, 8, 12],
-  outerBody:[64, 64, 16, 16, 8, 12],
-  larm:     [64, 64, 40, 32, 4, 12],
-  rarm:     [64, 64, 32, 0, 4, 12],
-  lleg:     [64, 64, 0, 32, 4, 12],
-  rleg:     [64, 64, 16, 0, 4, 12],
-  outerLarm:[64, 64, 40, 16, 4, 12],
-  outerRarm:[64, 64, 48, 0, 4, 12],
-  outerLleg:[64, 64, 0, 16, 4, 12],
-  outerRleg:[64, 64, 0, 0, 4, 12],
-};
-
-function applyBoxUV(geo, tw, th, ox, oy, fw, fh, fd) {
-  // Simple box UV mapping for Minecraft skin layout
-  const uvAttr = geo.getAttribute('uv');
-  const idx = geo.getIndex();
-  // faces: right, left, top, bottom, front, back (Three.js BoxGeometry order)
-  const faces = [
-    // right (+x): ox+fd, oy+fd, fw=fd, fh=fh
-    [ox+fd, oy+fd, fd, fh],
-    // left (-x): ox, oy+fd, fw=fd, fh=fh
-    [ox, oy+fd, fd, fh],
-    // top (+y): ox+fd, oy, fw=fw, fh=fd
-    [ox+fd, oy, fw, fd],
-    // bottom (-y): ox+fd+fw, oy, fw=fw, fh=fd
-    [ox+fd+fw, oy, fw, fd],
-    // front (+z): ox+fd+fw, oy+fd, fw=fw, fh=fh (main face)
-    [ox+fd, oy+fd, fw, fh],
-    // back (-z)
-    [ox+fd+fw+fd, oy+fd, fw, fh],
-  ];
-  const positions = [
-    [1,0],[0,0],[0,1],[1,1], // right
-    [0,0],[1,0],[1,1],[0,1], // left
-    [0,0],[1,0],[1,1],[0,1], // top
-    [1,0],[0,0],[0,1],[1,1], // bottom
-    [0,0],[1,0],[1,1],[0,1], // front
-    [1,0],[0,0],[0,1],[1,1], // back
-  ];
-  for (let f = 0; f < 6; f++) {
-    const [sx, sy, sw, sh] = faces[f];
-    for (let v = 0; v < 4; v++) {
-      const vi = f * 4 + v;
-      const [pu, pv] = positions[f * 4 + v] || positions[vi % positions.length];
-      uvAttr.setXY(vi, (sx + pu * sw) / tw, 1 - (sy + pv * sh) / th);
-    }
-  }
-  uvAttr.needsUpdate = true;
-}
-
-let modelGroup = null;
-
-function buildModel(tex) {
-  if (modelGroup) {
-    scene.remove(modelGroup);
-    modelGroup.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose?.(); } });
-    modelGroup = null;
-  }
-  parts = {};
-
-  const mat = () => createSSSMaterial(tex);
-  const outlineMat = () => createOutlineMaterial();
-
-  function makePart(name, w, h, d, px, py, pz, uvKey, parentGroup, outerKey) {
-    const geo = new THREE.BoxGeometry(w/8, h/8, d/8, 1, 1, 1);
-    const [tw, th, ox, oy, fw, fh] = UV[uvKey];
-    applyBoxUV(geo, tw, th, ox, oy, fw, fh, d);
-    const m = mat();
-    const mesh = new THREE.Mesh(geo, m);
-    mesh.castShadow = true;
-
-    const group = new THREE.Group();
-    mesh.position.set(px/8, py/8, pz/8);
-    group.add(mesh);
-
-    // Outline
-    if (state.fx.outline) {
-      const og = geo.clone();
-      const om = outlineMat();
-      const om2 = new THREE.Mesh(og, om);
-      om2.position.copy(mesh.position);
-      group.add(om2);
-    }
-
-    // Outer layer
-    if (outerKey) {
-      const og2 = new THREE.BoxGeometry(w/8*1.12, h/8*1.1, d/8*1.12);
-      const [tw2, th2, ox2, oy2, fw2, fh2] = UV[outerKey];
-      applyBoxUV(og2, tw2, th2, ox2, oy2, fw2, fh2, d);
-      const om3 = mat();
-      const outer = new THREE.Mesh(og2, om3);
-      outer.castShadow = true;
-      outer.position.copy(mesh.position);
-      group.add(outer);
-    }
-
-    parentGroup.add(group);
-    parts[name] = group;
-    return group;
-  }
-
-  modelGroup = new THREE.Group();
-  scene.add(modelGroup);
-
-  // Head group (pivot at base of head = y=0)
-  const headGroup = new THREE.Group();
-  headGroup.position.set(0, 1.5/8*8/8, 0); // top of body
-  modelGroup.add(headGroup);
-  parts.headGroup = headGroup;
-
-  const headGeo = new THREE.BoxGeometry(1, 1, 1);
-  const [tw0, th0, ox0, oy0, fw0, fh0] = UV.head;
-  applyBoxUV(headGeo, tw0, th0, ox0, oy0, fw0, fh0, 8);
-  const headMesh = new THREE.Mesh(headGeo, mat());
-  headMesh.position.set(0, 0.5, 0);
-  headMesh.castShadow = true;
-  headGroup.add(headMesh);
-
-  if (state.fx.outline) {
-    const hog = headGeo.clone();
-    const hom = new THREE.Mesh(hog, outlineMat());
-    hom.position.copy(headMesh.position);
-    headGroup.add(hom);
-  }
-
-  // Outer head
-  const outerGeo = new THREE.BoxGeometry(1.125, 1.125, 1.125);
-  const [tw1, th1, ox1, oy1, fw1, fh1] = UV.outer;
-  applyBoxUV(outerGeo, tw1, th1, ox1, oy1, fw1, fh1, 8);
-  const outerMesh = new THREE.Mesh(outerGeo, mat());
-  outerMesh.position.set(0, 0.5, 0);
-  headGroup.add(outerMesh);
-
-  // Body group
-  const bodyGroup = new THREE.Group();
-  bodyGroup.position.set(0, 0, 0);
-  modelGroup.add(bodyGroup);
-  parts.bodyGroup = bodyGroup;
-
-  const bodyGeo = new THREE.BoxGeometry(1, 1.5, 0.5);
-  const [tw2, th2, ox2, oy2, fw2, fh2] = UV.body;
-  applyBoxUV(bodyGeo, tw2, th2, ox2, oy2, fw2, fh2, 4);
-  const bodyMesh = new THREE.Mesh(bodyGeo, mat());
-  bodyMesh.position.set(0, 0, 0);
-  bodyMesh.castShadow = true;
-  bodyGroup.add(bodyMesh);
-  if (state.fx.outline) {
-    const bog = bodyGeo.clone(); const bom = new THREE.Mesh(bog, outlineMat());
-    bom.position.copy(bodyMesh.position); bodyGroup.add(bom);
-  }
-
-  // Left arm
-  const larmGroup = new THREE.Group();
-  larmGroup.position.set(-0.75, 0.625, 0);
-  modelGroup.add(larmGroup);
-  parts.larmGroup = larmGroup;
-  const larmGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
-  applyBoxUV(larmGeo, 64, 64, 40, 32, 4, 12, 4);
-  const larmMesh = new THREE.Mesh(larmGeo, mat());
-  larmMesh.position.set(0, -0.75, 0);
-  larmMesh.castShadow = true;
-  larmGroup.add(larmMesh);
-
-  // Right arm
-  const rarmGroup = new THREE.Group();
-  rarmGroup.position.set(0.75, 0.625, 0);
-  modelGroup.add(rarmGroup);
-  parts.rarmGroup = rarmGroup;
-  const rarmGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
-  applyBoxUV(rarmGeo, 64, 64, 32, 0, 4, 12, 4);
-  const rarmMesh = new THREE.Mesh(rarmGeo, mat());
-  rarmMesh.position.set(0, -0.75, 0);
-  rarmMesh.castShadow = true;
-  rarmGroup.add(rarmMesh);
-
-  // Left leg
-  const llegGroup = new THREE.Group();
-  llegGroup.position.set(-0.25, -0.75, 0);
-  modelGroup.add(llegGroup);
-  parts.llegGroup = llegGroup;
-  const llegGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
-  applyBoxUV(llegGeo, 64, 64, 0, 32, 4, 12, 4);
-  const llegMesh = new THREE.Mesh(llegGeo, mat());
-  llegMesh.position.set(0, -0.75, 0);
-  llegMesh.castShadow = true;
-  llegGroup.add(llegMesh);
-
-  // Right leg
-  const rlegGroup = new THREE.Group();
-  rlegGroup.position.set(0.25, -0.75, 0);
-  modelGroup.add(rlegGroup);
-  parts.rlegGroup = rlegGroup;
-  const rlegGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
-  applyBoxUV(rlegGeo, 64, 64, 16, 0, 4, 12, 4);
-  const rlegMesh = new THREE.Mesh(rlegGeo, mat());
-  rlegMesh.position.set(0, -0.75, 0);
-  rlegMesh.castShadow = true;
-  rlegGroup.add(rlegMesh);
-
-  // Center model
-  modelGroup.position.set(0, 0, 0);
-  applyPose();
-}
-
-function applyPose() {
-  if (!parts.headGroup) return;
-  const p = state.pose;
-  const D = THREE.MathUtils.degToRad;
-
-  if (modelGroup) {
-    modelGroup.rotation.set(D(p.model[0]/100), D(p.model[1]/100), D(p.model[2]/100));
-  }
-  parts.headGroup.rotation.set(D(p.head[0]/100), D(p.head[1]/100), D(p.head[2]/100));
-  parts.bodyGroup.rotation.set(D(p.body[0]/100), D(p.body[1]/100), D(p.body[2]/100));
-  parts.larmGroup.rotation.set(D(p.larm[0]/100), D(p.larm[1]/100), D(p.larm[2]/100));
-  parts.rarmGroup.rotation.set(D(p.rarm[0]/100), D(p.rarm[1]/100), D(p.rarm[2]/100));
-  parts.llegGroup.rotation.set(D(p.lleg[0]/100), D(p.lleg[1]/100), D(p.lleg[2]/100));
-  parts.rlegGroup.rotation.set(D(p.rleg[0]/100), D(p.rleg[1]/100), D(p.rleg[2]/100));
-
-  // Head only
-  if (parts.bodyGroup) parts.bodyGroup.visible = !state.headOnly;
-  if (parts.larmGroup) parts.larmGroup.visible = !state.headOnly;
-  if (parts.rarmGroup) parts.rarmGroup.visible = !state.headOnly;
-  if (parts.llegGroup) parts.llegGroup.visible = !state.headOnly;
-  if (parts.rlegGroup) parts.rlegGroup.visible = !state.headOnly;
-}
-
-// ─── RENDER LOOP ────────────────────────────────────────────────────
-let time = 0;
-function startLoop() {
-  function loop() {
-    animId = requestAnimationFrame(loop);
-    time += 0.016;
-
-    updateCamera();
-
-    // Update sketch outline time uniform
-    if (state.fx.outline && state.fx.outlineStyle === 'sketch' && modelGroup) {
-      modelGroup.traverse(o => {
-        if (o.isMesh && o.material?.uniforms?.time) {
-          o.material.uniforms.time.value = time;
-        }
-      });
-    }
-
-    // Update SSS camera/light positions
-    if (state.fx.sss && modelGroup) {
-      modelGroup.traverse(o => {
-        if (o.isMesh && o.material?.uniforms?.lightPos) {
-          o.material.uniforms.lightPos.value.copy(dirLight.position);
-          o.material.uniforms.cameraPos.value.copy(camera.position);
-        }
-      });
-    }
-
-    renderer.render(scene, camera);
-  }
+  resize();
+  window.addEventListener('resize',resize);
+  initOrbit(canvas);
   loop();
 }
 
-// ─── SKIN LOADING ───────────────────────────────────────────────────
-function loadSkin(url) {
-  const loader = new THREE.TextureLoader();
-  loader.crossOrigin = 'anonymous';
-  loader.load(url, tex => {
-    tex.magFilter = THREE.NearestFilter;
-    tex.minFilter = THREE.NearestFilter;
-    tex.colorSpace = THREE.SRGBColorSpace || undefined;
-    tex.encoding = THREE.sRGBEncoding;
-    skinTexture = tex;
-    state.skinLoaded = true;
-    showCanvas();
-    buildModel(tex);
-  }, undefined, e => {
-    alert('Failed to load skin. Check CORS / username.');
+function resize(){
+  const box=document.getElementById('canvas-box');
+  if(box.style.display==='none')return;
+  const wrap=box.parentElement;
+  const s=Math.min(wrap.clientWidth-40,wrap.clientHeight-40,560);
+  renderer.setSize(s,s);
+  camera.aspect=1;
+  camera.fov=S.scene.fov;
+  camera.updateProjectionMatrix();
+}
+
+// ── ORBIT ────────────────────────────────────────────────────────────
+let mdown=false,mbtn=0,mx=0,my=0;
+function initOrbit(c){
+  c.addEventListener('mousedown',e=>{mdown=true;mbtn=e.button;mx=e.clientX;my=e.clientY;e.preventDefault()});
+  window.addEventListener('mouseup',()=>mdown=false);
+  window.addEventListener('mousemove',e=>{
+    if(!mdown)return;
+    const dx=e.clientX-mx,dy=e.clientY-my;mx=e.clientX;my=e.clientY;
+    if(mbtn===0){rotY+=dx*.5;rotX+=dy*.5;rotX=Math.max(-89,Math.min(89,rotX));}
+    else if(mbtn===2){panX+=dx*.003;panY-=dy*.003;}
   });
+  c.addEventListener('wheel',e=>{zoom+=e.deltaY*.005;zoom=Math.max(.5,Math.min(8,zoom));e.preventDefault()},{passive:false});
+  c.addEventListener('contextmenu',e=>e.preventDefault());
+  let td=0;
+  c.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){mx=e.touches[0].clientX;my=e.touches[0].clientY;}
+    if(e.touches.length===2){const t=e.touches;td=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);}
+    e.preventDefault();
+  },{passive:false});
+  c.addEventListener('touchmove',e=>{
+    if(e.touches.length===1){const dx=e.touches[0].clientX-mx,dy=e.touches[0].clientY-my;mx=e.touches[0].clientX;my=e.touches[0].clientY;rotY+=dx*.5;rotX+=dy*.5;rotX=Math.max(-89,Math.min(89,rotX));}
+    if(e.touches.length===2){const t=e.touches;const d2=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);zoom-=(d2-td)*.01;zoom=Math.max(.5,Math.min(8,zoom));td=d2;}
+    e.preventDefault();
+  },{passive:false});
 }
 
-function showCanvas() {
-  document.getElementById('upload-overlay').style.display = 'none';
-  const wrap = document.getElementById('canvas-container');
-  wrap.style.display = 'block';
-  document.getElementById('canvas-toolbar').style.display = 'flex';
-  document.getElementById('canvas-hint').style.display = 'block';
-  setSize();
+function updateCam(){
+  const phi=DEG(rotX),theta=DEG(rotY);
+  camera.position.set(zoom*Math.cos(phi)*Math.sin(theta)+panX,zoom*Math.sin(phi)+panY,zoom*Math.cos(phi)*Math.cos(theta));
+  camera.lookAt(panX,panY,0);
 }
 
-function handleFileInput(file) {
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  loadSkin(url);
-}
+// ── MATERIALS ────────────────────────────────────────────────────────
+function makeMat(tex){
+  const fx=S.fx;
+  const lp=dirLight.position;
+  const cp=camera.position;
 
-document.getElementById('file-skin').addEventListener('change', e => handleFileInput(e.target.files[0]));
-document.getElementById('file-skin-2').addEventListener('change', e => handleFileInput(e.target.files[0]));
-document.getElementById('btn-upload-skin').addEventListener('click', () => document.getElementById('file-skin').click());
-
-// Drag & drop
-const uploadBox = document.getElementById('upload-box');
-['dragover','dragenter'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.add('drag-over'); }));
-['dragleave','drop'].forEach(ev => uploadBox.addEventListener(ev, e => { uploadBox.classList.remove('drag-over'); }));
-uploadBox.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFileInput(f); });
-
-// Fetch by username
-document.getElementById('btn-fetch').addEventListener('click', () => {
-  const u = document.getElementById('input-username').value.trim();
-  if (!u) return;
-  const url = `https://mcskins.top/assets/images/skinbyname/${u}.png`;
-  loadSkin(url);
-});
-document.getElementById('input-username').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-fetch').click(); });
-
-// ─── CONTROLS BINDING ───────────────────────────────────────────────
-function bindSlider(sliderId, numberId, callback) {
-  const slider = document.getElementById(sliderId);
-  const number = document.getElementById(numberId);
-  if (!slider || !number) return;
-
-  slider.addEventListener('input', () => {
-    number.value = slider.value;
-    callback(parseFloat(slider.value));
-  });
-  number.addEventListener('input', () => {
-    slider.value = number.value;
-    callback(parseFloat(number.value));
-  });
-}
-
-// Pose sliders
-const poseMap = [
-  ['s-model-x','n-model-x', v => { state.pose.model[0]=v; applyPose(); }],
-  ['s-model-y','n-model-y', v => { state.pose.model[1]=v; applyPose(); }],
-  ['s-model-z','n-model-z', v => { state.pose.model[2]=v; applyPose(); }],
-  ['s-head-x','n-head-x', v => { state.pose.head[0]=v; applyPose(); }],
-  ['s-head-y','n-head-y', v => { state.pose.head[1]=v; applyPose(); }],
-  ['s-head-z','n-head-z', v => { state.pose.head[2]=v; applyPose(); }],
-  ['s-body-x','n-body-x', v => { state.pose.body[0]=v; applyPose(); }],
-  ['s-body-y','n-body-y', v => { state.pose.body[1]=v; applyPose(); }],
-  ['s-body-z','n-body-z', v => { state.pose.body[2]=v; applyPose(); }],
-  ['s-larm-x','n-larm-x', v => { state.pose.larm[0]=v; applyPose(); }],
-  ['s-larm-y','n-larm-y', v => { state.pose.larm[1]=v; applyPose(); }],
-  ['s-larm-z','n-larm-z', v => { state.pose.larm[2]=v; applyPose(); }],
-  ['s-larm-e','n-larm-e', v => { state.pose.larm[3]=v; applyPose(); }],
-  ['s-rarm-x','n-rarm-x', v => { state.pose.rarm[0]=v; applyPose(); }],
-  ['s-rarm-y','n-rarm-y', v => { state.pose.rarm[1]=v; applyPose(); }],
-  ['s-rarm-z','n-rarm-z', v => { state.pose.rarm[2]=v; applyPose(); }],
-  ['s-rarm-e','n-rarm-e', v => { state.pose.rarm[3]=v; applyPose(); }],
-  ['s-lleg-x','n-lleg-x', v => { state.pose.lleg[0]=v; applyPose(); }],
-  ['s-lleg-y','n-lleg-y', v => { state.pose.lleg[1]=v; applyPose(); }],
-  ['s-lleg-z','n-lleg-z', v => { state.pose.lleg[2]=v; applyPose(); }],
-  ['s-rleg-x','n-rleg-x', v => { state.pose.rleg[0]=v; applyPose(); }],
-  ['s-rleg-y','n-rleg-y', v => { state.pose.rleg[1]=v; applyPose(); }],
-  ['s-rleg-z','n-rleg-z', v => { state.pose.rleg[2]=v; applyPose(); }],
-];
-poseMap.forEach(([s, n, cb]) => bindSlider(s, n, cb));
-
-// Scene sliders
-bindSlider('s-ambient','n-ambient', v => { state.scene.ambient = v/100; if (ambientLight) ambientLight.intensity = v/100; });
-bindSlider('s-dlight','n-dlight', v => { state.scene.dlight = v/100; if (dirLight) dirLight.intensity = v/100; if (state.skinLoaded) rebuildMaterials(); });
-bindSlider('s-fov','n-fov', v => { state.scene.fov = v; if (camera) { camera.fov = v; camera.updateProjectionMatrix(); } });
-
-// FX sliders
-bindSlider('s-outline-thick','n-outline-thick', v => { state.fx.outlineThick = v; if (state.skinLoaded) rebuildModel(); });
-bindSlider('s-outline-opacity','n-outline-opacity', v => { state.fx.outlineOpacity = v; if (state.skinLoaded) rebuildModel(); });
-bindSlider('s-sss-strength','n-sss-strength', v => { state.fx.sssStrength = v/100; if (state.skinLoaded) rebuildMaterials(); });
-bindSlider('s-sss-radius','n-sss-radius', v => { state.fx.sssRadius = v/100; if (state.skinLoaded) rebuildMaterials(); });
-bindSlider('s-sss-distortion','n-sss-distortion', v => { state.fx.sssDistortion = v/100; if (state.skinLoaded) rebuildMaterials(); });
-bindSlider('s-sss-ambient','n-sss-ambient', v => { state.fx.sssAmbient = v/100; if (state.skinLoaded) rebuildMaterials(); });
-bindSlider('s-toon-steps','n-toon-steps', v => { state.fx.toonSteps = v; if (state.skinLoaded) rebuildMaterials(); });
-bindSlider('s-bloom','n-bloom', v => { state.fx.bloomStrength = v/100; });
-
-// Toggles
-document.getElementById('toggle-headonly').addEventListener('change', e => { state.headOnly = e.target.checked; applyPose(); });
-document.getElementById('toggle-outline').addEventListener('change', e => { state.fx.outline = e.target.checked; if (state.skinLoaded) rebuildModel(); });
-document.getElementById('toggle-sss').addEventListener('change', e => { state.fx.sss = e.target.checked; if (state.skinLoaded) rebuildMaterials(); });
-document.getElementById('toggle-toon').addEventListener('change', e => { state.fx.toon = e.target.checked; if (state.skinLoaded) rebuildMaterials(); });
-document.getElementById('toggle-bloom').addEventListener('change', e => { state.fx.bloom = e.target.checked; });
-document.getElementById('toggle-bg').addEventListener('change', e => { state.scene.bgEnabled = e.target.checked; updateBackground(); });
-document.getElementById('toggle-floor').addEventListener('change', e => { state.scene.floorEnabled = e.target.checked; if (floorMesh) floorMesh.visible = e.target.checked; });
-
-// Select
-document.getElementById('sel-outline-style').addEventListener('change', e => { state.fx.outlineStyle = e.target.value; if (state.skinLoaded) rebuildModel(); });
-
-// Colors
-function bindColor(inputId, displayId, onchange) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  input.addEventListener('input', () => {
-    const disp = document.getElementById(displayId);
-    if (disp) disp.style.background = input.value;
-    onchange(input.value);
-  });
-}
-bindColor('color-light', null, v => { state.scene.lightColor = v; if (dirLight) dirLight.color.set(v); });
-bindColor('color-bg1', null, v => { state.scene.bg1 = v; updateBackground(); });
-bindColor('color-bg2', null, v => { state.scene.bg2 = v; updateBackground(); });
-bindColor('color-floor', null, v => { state.scene.floorColor = v; if (floorMesh) floorMesh.material.color?.set(v); });
-bindColor('color-outline', 'outline-color-display', v => { state.fx.outlineColor = v; if (state.skinLoaded) rebuildModel(); });
-bindColor('color-sss', 'sss-color-display', v => { state.fx.sssColor = v; if (state.skinLoaded) rebuildMaterials(); });
-
-function updateBackground() {
-  if (state.scene.bgEnabled) {
-    const c1 = new THREE.Color(state.scene.bg1);
-    const c2 = new THREE.Color(state.scene.bg2);
-    scene.background = c1;
-  } else {
-    scene.background = null;
+  if(fx.sss){
+    const sc=new THREE.Color(fx.sssColor);
+    return new THREE.ShaderMaterial({
+      uniforms:{
+        map:{value:tex},
+        lightPos:{value:lp},cameraPos:{value:cp},
+        ambientInt:{value:S.scene.ambient},lightInt:{value:S.scene.dlight},
+        sssStr:{value:fx.sssStr},sssRad:{value:fx.sssRad},
+        sssDis:{value:fx.sssDis},sssAmb:{value:fx.sssAmb},
+        sssColor:{value:new THREE.Vector3(sc.r,sc.g,sc.b)},
+        toonEnabled:{value:fx.toon?1:0},toonSteps:{value:fx.toonSteps},
+      },
+      vertexShader:`
+        varying vec2 vUv;varying vec3 vN,vWP;
+        void main(){vUv=uv;vN=normalize(normalMatrix*normal);
+          vWP=(modelMatrix*vec4(position,1.)).xyz;
+          gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}
+      `,
+      fragmentShader:`
+        uniform sampler2D map;uniform vec3 lightPos,cameraPos,sssColor;
+        uniform float ambientInt,lightInt,sssStr,sssRad,sssDis,sssAmb;
+        uniform int toonEnabled;uniform float toonSteps;
+        varying vec2 vUv;varying vec3 vN,vWP;
+        void main(){
+          vec4 tc=texture2D(map,vUv);if(tc.a<.05)discard;
+          vec3 N=normalize(vN),L=normalize(lightPos-vWP),V=normalize(cameraPos-vWP);
+          float NdL=max(0.,(dot(N,L)+sssRad)/(1.+sssRad));
+          if(toonEnabled==1)NdL=floor(NdL*toonSteps)/toonSteps;
+          vec3 Ls=normalize(L+N*sssDis);
+          float vdl=pow(max(0.,dot(V,-Ls)),4.)*sssStr;
+          vec3 sss=(vdl+sssAmb)*sssColor*lightInt;
+          vec3 col=tc.rgb*(ambientInt+NdL*lightInt)+sss;
+          gl_FragColor=vec4(col,tc.a);}
+      `,
+      side:THREE.FrontSide,transparent:true,alphaTest:.05
+    });
   }
+
+  if(fx.toon){
+    const lp2=dirLight.position;
+    return new THREE.ShaderMaterial({
+      uniforms:{map:{value:tex},lightPos:{value:lp2},ambientInt:{value:S.scene.ambient},lightInt:{value:S.scene.dlight},steps:{value:fx.toonSteps}},
+      vertexShader:`varying vec2 vUv;varying vec3 vN,vWP;void main(){vUv=uv;vN=normalize(normalMatrix*normal);vWP=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+      fragmentShader:`uniform sampler2D map;uniform vec3 lightPos;uniform float ambientInt,lightInt,steps;varying vec2 vUv;varying vec3 vN,vWP;void main(){vec4 tc=texture2D(map,vUv);if(tc.a<.05)discard;vec3 N=normalize(vN),L=normalize(lightPos-vWP);float d=floor(max(0.,dot(N,L))*steps)/steps;gl_FragColor=vec4(tc.rgb*(ambientInt+d*lightInt),tc.a);}`,
+      side:THREE.FrontSide,transparent:true,alphaTest:.05
+    });
+  }
+
+  return new THREE.MeshLambertMaterial({map:tex,side:THREE.FrontSide,transparent:true,alphaTest:.05});
 }
 
-function rebuildMaterials() {
-  if (!modelGroup || !skinTexture) return;
-  modelGroup.traverse(o => {
-    if (o.isMesh && !o.userData.isOutline) {
-      o.material.dispose?.();
-      o.material = createSSSMaterial(skinTexture);
+function makeOutlineMat(){
+  const c=new THREE.Color(S.fx.outColor);
+  const t=S.fx.outThick*.008;
+  const op=S.fx.outOpacity;
+  const u={outlineColor:{value:new THREE.Vector3(c.r,c.g,c.b)},thickness:{value:t},opacity:{value:op},time:{value:0}};
+  const vs=S.fx.outStyle==='sketch'
+    ?`uniform float thickness,time;void main(){float n=sin(position.x*30.+time)*.003+cos(position.y*30.+time*1.3)*.003;gl_Position=projectionMatrix*modelViewMatrix*vec4(position+normal*(thickness+n),1.);}`
+    :`uniform float thickness;void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position+normal*thickness,1.);}`;
+  const fs=S.fx.outStyle==='glow'
+    ?`uniform vec3 outlineColor;uniform float opacity;void main(){gl_FragColor=vec4(outlineColor*1.8,opacity);}`
+    :`uniform vec3 outlineColor;uniform float opacity;void main(){gl_FragColor=vec4(outlineColor,opacity);}`;
+  return new THREE.ShaderMaterial({uniforms:u,vertexShader:vs,fragmentShader:fs,side:THREE.BackSide,transparent:true});
+}
+
+// ── GLTF LOADER (minimal inline) ─────────────────────────────────────
+function loadGLTFFromJSON(gltfJson, skinUrl, callback){
+  const gltf=JSON.parse(gltfJson);
+
+  // Replace __SKIN__ with actual skin URL
+  gltf.images[0].uri=skinUrl;
+
+  const loader=new THREE.TextureLoader();
+  loader.crossOrigin='anonymous';
+  loader.load(skinUrl, tex=>{
+    tex.magFilter=THREE.NearestFilter;
+    tex.minFilter=THREE.NearestFilter;
+    tex.encoding=THREE.sRGBEncoding;
+    skinTex=tex;
+
+    // Decode base64 buffer
+    const b64=gltf.buffers[0].uri.split(',')[1];
+    const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0)).buffer;
+
+    // Build accessors helper
+    function getAccessor(idx){
+      const acc=gltf.accessors[idx];
+      const bv=gltf.bufferViews[acc.bufferView];
+      const offset=(bv.byteOffset||0)+(acc.byteOffset||0);
+      const count=acc.count;
+      const typeMap={SCALAR:1,VEC2:2,VEC3:3,VEC4:4};
+      const n=typeMap[acc.type]||1;
+      const CompType={5126:Float32Array,5123:Uint16Array,5121:Uint8Array};
+      const CT=CompType[acc.componentType]||Float32Array;
+      return {data:new CT(bin,offset,count*n),count,n};
+    }
+
+    // Build meshes
+    const meshGroups={};
+    gltf.meshes.forEach((mesh,mi)=>{
+      const g=new THREE.Group();
+      mesh.primitives.forEach(prim=>{
+        const geo=new THREE.BufferGeometry();
+        if(prim.attributes.POSITION!==undefined){
+          const a=getAccessor(prim.attributes.POSITION);
+          geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(a.data),3));
+        }
+        if(prim.attributes.NORMAL!==undefined){
+          const a=getAccessor(prim.attributes.NORMAL);
+          geo.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(a.data),3));
+        }
+        if(prim.attributes.TEXCOORD_0!==undefined){
+          const a=getAccessor(prim.attributes.TEXCOORD_0);
+          geo.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(a.data),2));
+        }
+        if(prim.indices!==undefined){
+          const a=getAccessor(prim.indices);
+          geo.setIndex(new THREE.BufferAttribute(new Uint16Array(a.data),1));
+        }
+
+        const mat=makeMat(tex);
+        const mesh2=new THREE.Mesh(geo,mat);
+        mesh2.castShadow=true;
+        mesh2.userData.geo=geo;
+        g.add(mesh2);
+
+        // Outline
+        if(S.fx.outline){
+          const og=geo.clone();
+          const om=new THREE.Mesh(og,makeOutlineMat());
+          om.userData.isOutline=true;
+          g.add(om);
+        }
+      });
+      meshGroups[mi]=g;
+    });
+
+    // Build scene graph
+    const nodeObjects={};
+    function buildNode(idx){
+      const nd=gltf.nodes[idx];
+      const g=new THREE.Group();
+      g.name=nd.name||('node'+idx);
+      if(nd.translation)g.position.fromArray(nd.translation);
+      if(nd.rotation)g.quaternion.fromArray(nd.rotation);
+      if(nd.scale)g.scale.fromArray(nd.scale);
+      if(nd.mesh!==undefined)g.add(meshGroups[nd.mesh]);
+      if(nd.children)nd.children.forEach(ci=>g.add(buildNode(ci)));
+      nodeObjects[idx]=g;
+      return g;
+    }
+
+    const root=new THREE.Group();
+    gltf.scenes[0].nodes.forEach(ni=>root.add(buildNode(ni)));
+
+    // Store named pivots
+    const pivots={};
+    Object.entries(nodeObjects).forEach(([i,g])=>{
+      gltf.nodes[i] && (pivots[gltf.nodes[i].name]=g);
+    });
+
+    callback(root,pivots,tex,nodeObjects,gltf);
+  }, undefined, e=>console.error('Skin load error',e));
+}
+
+// ── MODEL ────────────────────────────────────────────────────────────
+let modelRoot=null,pivots={},nodeObjects={},gltfData=null;
+
+function loadModel(){
+  if(!S.skinUrl)return;
+  if(modelRoot){scene.remove(modelRoot);modelRoot=null;}
+
+  const gltfStr=S.slim?GLTF_SLIM:GLTF_NORMAL;
+
+  loadGLTFFromJSON(gltfStr,S.skinUrl,(root,pvs,tex,no,gd)=>{
+    modelRoot=root;
+    pivots=pvs;
+    nodeObjects=no;
+    gltfData=gd;
+    scene.add(root);
+    applyPose();
+    showCanvas();
+  });
+}
+
+function rebuildMaterials(){
+  if(!modelRoot||!skinTex)return;
+  modelRoot.traverse(o=>{
+    if(o.isMesh){
+      if(o.userData.isOutline){
+        o.material.dispose?.();
+        o.material=makeOutlineMat();
+      } else {
+        o.material.dispose?.();
+        o.material=makeMat(skinTex);
+      }
     }
   });
 }
 
-function rebuildModel() {
-  if (!skinTexture) return;
-  buildModel(skinTexture);
+// Map pivot names from GLTF — these match node names
+// Waist is parent of Body, LeftArm pivot, RightArm pivot
+// Scene root nodes: Waist(12), RightLeg(15), LeftLeg(18)
+function getNode(idx){return nodeObjects[idx]}
+
+function applyPose(){
+  if(!modelRoot)return;
+  const p=S.pose;
+
+  // Model root rotation (node 12 = Waist is the "body" parent)
+  const waist=getNode(12);
+  if(waist)waist.rotation.set(DEG(p.model[0]),DEG(p.model[1]),DEG(p.model[2]));
+
+  // Head pivot = node 2
+  const head=getNode(2);
+  if(head)head.rotation.set(DEG(p.head[0]/5),DEG(p.head[1]/5),DEG(p.head[2]/5));
+
+  // Body = node 5
+  const body=getNode(5);
+  if(body)body.rotation.set(DEG(p.body[0]/5),DEG(p.body[1]/5),DEG(p.body[2]/5));
+
+  // Left arm pivot = node 11
+  const larm=getNode(11);
+  if(larm)larm.rotation.set(DEG(p.larm[0]/5),DEG(p.larm[1]/5),DEG(p.larm[2]/5));
+
+  // Right arm pivot = node 8
+  const rarm=getNode(8);
+  if(rarm)rarm.rotation.set(DEG(p.rarm[0]/5),DEG(p.rarm[1]/5),DEG(p.rarm[2]/5));
+
+  // Left leg pivot = node 18
+  const lleg=getNode(18);
+  if(lleg)lleg.rotation.set(DEG(p.lleg[0]/5),DEG(p.lleg[1]/5),DEG(p.lleg[2]/5));
+
+  // Right leg pivot = node 15
+  const rleg=getNode(15);
+  if(rleg)rleg.rotation.set(DEG(p.rleg[0]/5),DEG(p.rleg[1]/5),DEG(p.rleg[2]/5));
+
+  // Head only visibility
+  [5,8,11,15,18].forEach(i=>{
+    const n=getNode(i);if(n)n.visible=!S.headOnly;
+  });
 }
 
-// ─── TABS ───────────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-  });
-});
-
-// ─── TOOLBAR ────────────────────────────────────────────────────────
-document.getElementById('btn-reset-cam').addEventListener('click', () => {
-  rotX = 0; rotY = 0; panX = 0; panY = 0; zoom = 4;
-});
-document.getElementById('btn-wireframe').addEventListener('click', () => {
-  state.wireframe = !state.wireframe;
-  if (modelGroup) modelGroup.traverse(o => {
-    if (o.isMesh && o.material?.wireframe !== undefined) o.material.wireframe = state.wireframe;
-  });
-});
-document.getElementById('btn-reset-pose').addEventListener('click', () => {
-  state.pose = { model:[0,0,0], head:[0,0,0], body:[0,0,0], larm:[0,0,0,0], rarm:[0,0,0,0], lleg:[0,0,0], rleg:[0,0,0] };
-  poseMap.forEach(([s,n]) => { document.getElementById(s).value=0; document.getElementById(n).value=0; });
-  applyPose();
-});
-
-// ─── POSE JSON ──────────────────────────────────────────────────────
-document.getElementById('btn-copy-pose').addEventListener('click', () => {
-  const json = JSON.stringify(state.pose);
-  navigator.clipboard.writeText(json).catch(() => {});
-  document.getElementById('pose-json').value = json;
-  document.getElementById('btn-copy-pose').textContent = 'Copied!';
-  setTimeout(() => document.getElementById('btn-copy-pose').textContent = 'Copy', 1500);
-});
-document.getElementById('btn-load-pose').addEventListener('click', () => {
-  try {
-    const p = JSON.parse(document.getElementById('pose-json').value);
-    Object.assign(state.pose, p);
-    applyPose();
-  } catch(e) { alert('Invalid JSON'); }
-});
-
-// ─── DOWNLOAD ───────────────────────────────────────────────────────
-document.getElementById('btn-download').addEventListener('click', () => {
-  if (!renderer) return;
-  renderer.render(scene, camera);
-  const url = renderer.domElement.toDataURL('image/png');
-  const a = document.createElement('a');
-  a.href = url; a.download = 'mc-avatar.png'; a.click();
-});
-
-document.getElementById('btn-screenshot').addEventListener('click', () => {
-  document.getElementById('btn-download').click();
-});
-
-// ─── GENERATE AVATARS ───────────────────────────────────────────────
-document.getElementById('btn-generate').addEventListener('click', () => {
-  if (!state.skinLoaded) { alert('Load a skin first!'); return; }
-  // Snapshot current state, render different poses
-  const origPose = JSON.parse(JSON.stringify(state.pose));
-  const origRot = [rotX, rotY];
-  const poses = [
-    { name: 'Head', headOnly: true, ry: 15, rx: 10 },
-    { name: 'Body', headOnly: false, ry: 15, rx: 5 },
-    { name: 'Side', headOnly: false, ry: 60, rx: 5 },
-    { name: 'Front', headOnly: false, ry: 0, rx: 0 },
-  ];
-  const results = [];
-  poses.forEach((pose, i) => {
-    state.headOnly = pose.headOnly;
-    rotY = pose.ry; rotX = pose.rx;
-    applyPose();
-    updateCamera();
-    renderer.render(scene, camera);
-    results.push({ name: pose.name, url: renderer.domElement.toDataURL('image/png') });
-  });
-  // Restore
-  state.headOnly = false;
-  Object.assign(state.pose, origPose);
-  rotX = origRot[0]; rotY = origRot[1];
-  applyPose();
-  renderer.render(scene, camera);
-
-  // Show download links
-  showGeneratedAvatars(results);
-});
-
-function showGeneratedAvatars(results) {
-  const existing = document.getElementById('generated-panel');
-  if (existing) existing.remove();
-
-  const panel = document.createElement('div');
-  panel.id = 'generated-panel';
-  panel.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.5);';
-
-  results.forEach(r => {
-    const div = document.createElement('div');
-    div.style.cssText = 'text-align:center;';
-    const a = document.createElement('a');
-    a.href = r.url; a.download = `mc-avatar-${r.name}.png`;
-    const img = document.createElement('img');
-    img.src = r.url; img.style.cssText = 'width:80px;height:80px;border-radius:8px;display:block;border:1px solid var(--border);image-rendering:pixelated;';
-    const label = document.createElement('div');
-    label.style.cssText = 'font-size:11px;color:var(--text-dim);margin-top:4px;';
-    label.textContent = r.name;
-    a.appendChild(img); div.appendChild(a); div.appendChild(label);
-    panel.appendChild(div);
-  });
-
-  const close = document.createElement('div');
-  close.textContent = '✕';
-  close.style.cssText = 'position:absolute;top:8px;right:10px;cursor:pointer;color:var(--text-dim);font-size:14px;';
-  close.onclick = () => panel.remove();
-  panel.appendChild(close);
-
-  document.body.appendChild(panel);
-}
-
-// ─── DIRECTIONAL LIGHT DRAG ─────────────────────────────────────────
-(function() {
-  const area = document.getElementById('light-area');
-  const pt = document.getElementById('light-pt');
-  let dragging = false;
-
-  function setPos(cx, cy) {
-    const rect = area.getBoundingClientRect();
-    const x = Math.max(0, Math.min(rect.width, cx - rect.left));
-    const y = Math.max(0, Math.min(rect.height, cy - rect.top));
-    pt.style.left = x + 'px'; pt.style.top = y + 'px';
-    const nx = (x / rect.width - 0.5) * 2;
-    const ny = (y / rect.height - 0.5) * 2;
-    if (dirLight) dirLight.position.set(nx * 3, 2, ny * 3);
+// ── LOOP ─────────────────────────────────────────────────────────────
+function loop(){
+  requestAnimationFrame(loop);
+  time+=.016;
+  updateCam();
+  if(S.fx.outline&&S.fx.outStyle==='sketch'&&modelRoot){
+    modelRoot.traverse(o=>{if(o.isMesh&&o.material?.uniforms?.time)o.material.uniforms.time.value=time;});
   }
+  if(S.fx.sss&&modelRoot){
+    modelRoot.traverse(o=>{
+      if(o.isMesh&&o.material?.uniforms?.lightPos){
+        o.material.uniforms.lightPos.value.copy(dirLight.position);
+        o.material.uniforms.cameraPos.value.copy(camera.position);
+      }
+    });
+  }
+  renderer.render(scene,camera);
+}
 
-  area.addEventListener('mousedown', e => { dragging = true; setPos(e.clientX, e.clientY); pt.style.cursor = 'grabbing'; });
-  window.addEventListener('mouseup', () => { dragging = false; pt.style.cursor = 'grab'; });
-  window.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX, e.clientY); });
-  area.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive: false });
-  window.addEventListener('touchend', () => { dragging = false; });
-  window.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+// ── SHOW CANVAS ──────────────────────────────────────────────────────
+function showCanvas(){
+  document.getElementById('upload-overlay').style.display='none';
+  const box=document.getElementById('canvas-box');
+  box.style.display='block';
+  resize();
+}
+
+// ── SKIN LOADING ─────────────────────────────────────────────────────
+function loadSkin(url){
+  S.skinUrl=url;
+  loadModel();
+}
+
+document.getElementById('btn-upload').addEventListener('click',()=>document.getElementById('file-skin').click());
+document.getElementById('file-skin').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  loadSkin(URL.createObjectURL(f));
+});
+// Drag & drop
+const ub=document.getElementById('upload-box');
+ub.addEventListener('dragover',e=>{e.preventDefault();ub.classList.add('drag-over')});
+ub.addEventListener('dragleave',()=>ub.classList.remove('drag-over'));
+ub.addEventListener('drop',e=>{e.preventDefault();ub.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)loadSkin(URL.createObjectURL(f));});
+document.getElementById('btn-fetch').addEventListener('click',()=>{
+  const u=document.getElementById('input-user').value.trim();
+  if(!u)return;
+  loadSkin(`https://mcskins.top/assets/images/skinbyname/${u}.png`);
+});
+document.getElementById('input-user').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-fetch').click();});
+
+// ── POSE SLIDERS ─────────────────────────────────────────────────────
+const poseGroups=[
+  {label:'Model',key:'model',axes:['X','Y','Z'],range:[-180,180]},
+  {label:'Head',key:'head',axes:['X','Y','Z'],range:[-100,100]},
+  {label:'Body',key:'body',axes:['X','Y','Z'],range:[-100,100]},
+  {label:'Left arm',key:'larm',axes:['X','Y','Z','Elbow'],range:[-100,100]},
+  {label:'Right arm',key:'rarm',axes:['X','Y','Z','Elbow'],range:[-100,100]},
+  {label:'Left leg',key:'lleg',axes:['X','Y','Z'],range:[-100,100]},
+  {label:'Right leg',key:'rleg',axes:['X','Y','Z'],range:[-100,100]},
+];
+
+const poseContainer=document.getElementById('pose-sliders');
+poseGroups.forEach(g=>{
+  const label=document.createElement('div');
+  label.style.cssText='font-size:11px;font-weight:600;color:#aaa;letter-spacing:.5px;text-transform:uppercase;margin:10px 0 4px';
+  label.textContent=g.label;
+  poseContainer.appendChild(label);
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;gap:6px';
+  g.axes.forEach((ax,ai)=>{
+    const w=document.createElement('div');
+    w.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;gap:2px';
+    const sl=document.createElement('input');
+    sl.type='range';sl.min=g.range[0];sl.max=g.range[1];sl.value=0;sl.step=1;
+    sl.style.cssText='width:100%';
+    const vl=document.createElement('span');
+    vl.style.cssText='font-size:10px;color:#bbb';vl.textContent='0';
+    const axl=document.createElement('span');
+    axl.style.cssText='font-size:10px;color:#bbb;font-weight:500';axl.textContent=ax;
+    sl.addEventListener('input',()=>{
+      vl.textContent=sl.value;
+      S.pose[g.key][ai]=parseFloat(sl.value);
+      applyPose();
+    });
+    w.appendChild(axl);w.appendChild(sl);w.appendChild(vl);
+    row.appendChild(w);
+  });
+  poseContainer.appendChild(row);
+});
+
+document.getElementById('btn-reset-pose').addEventListener('click',()=>{
+  Object.keys(S.pose).forEach(k=>S.pose[k]=[0,0,0,0]);
+  document.querySelectorAll('#pose-sliders input[type=range]').forEach(s=>s.value=0);
+  document.querySelectorAll('#pose-sliders span').forEach(s=>{if(s.textContent.match(/^-?\d/))s.textContent='0';});
+  applyPose();
+});
+
+document.getElementById('btn-copy-pose').addEventListener('click',()=>{
+  const j=JSON.stringify(S.pose);
+  document.getElementById('pose-json').value=j;
+  navigator.clipboard.writeText(j).catch(()=>{});
+  document.getElementById('btn-copy-pose').textContent='Copied!';
+  setTimeout(()=>document.getElementById('btn-copy-pose').textContent='Copy JSON',1500);
+});
+
+document.getElementById('btn-load-pose').addEventListener('click',()=>{
+  try{Object.assign(S.pose,JSON.parse(document.getElementById('pose-json').value));applyPose();}
+  catch(e){alert('Invalid JSON');}
+});
+
+// ── TOGGLES ──────────────────────────────────────────────────────────
+document.getElementById('tg-headonly').addEventListener('change',e=>{S.headOnly=e.target.checked;applyPose();});
+document.getElementById('tg-slim').addEventListener('change',e=>{S.slim=e.target.checked;loadModel();});
+document.getElementById('tg-outline').addEventListener('change',e=>{S.fx.outline=e.target.checked;rebuildMaterials();});
+document.getElementById('tg-sss').addEventListener('change',e=>{S.fx.sss=e.target.checked;rebuildMaterials();});
+document.getElementById('tg-toon').addEventListener('change',e=>{S.fx.toon=e.target.checked;rebuildMaterials();});
+document.getElementById('tg-bg').addEventListener('change',e=>{S.scene.bg=e.target.checked;updateBG();});
+document.getElementById('tg-floor').addEventListener('change',e=>{S.scene.floor=e.target.checked;if(floorMesh)floorMesh.visible=e.target.checked;});
+document.getElementById('tg-shadow').addEventListener('change',e=>{S.scene.shadow=e.target.checked;if(renderer){renderer.shadowMap.enabled=e.target.checked;rebuildMaterials();}});
+
+// ── SCENE SLIDERS ────────────────────────────────────────────────────
+function bindS(sid,vid,cb){
+  const s=document.getElementById(sid),v=document.getElementById(vid);
+  s.addEventListener('input',()=>{v.textContent=s.value;cb(parseFloat(s.value));});
+}
+bindS('s-ambient','v-ambient',v=>{S.scene.ambient=v/100;if(ambLight)ambLight.intensity=v/100;if(S.fx.sss||S.fx.toon)rebuildMaterials();});
+bindS('s-dlight','v-dlight',v=>{S.scene.dlight=v/100;if(dirLight)dirLight.intensity=v/100;if(S.fx.sss||S.fx.toon)rebuildMaterials();});
+bindS('s-fov','v-fov',v=>{S.scene.fov=v;if(camera){camera.fov=v;camera.updateProjectionMatrix();}});
+
+// FX sliders
+bindS('s-out-thick','v-out-thick',v=>{S.fx.outThick=v;rebuildMaterials();});
+bindS('s-out-opacity','v-out-opacity',v=>{S.fx.outOpacity=v/100;rebuildMaterials();});
+bindS('s-sss-str','v-sss-str',v=>{S.fx.sssStr=v/100;rebuildMaterials();});
+bindS('s-sss-rad','v-sss-rad',v=>{S.fx.sssRad=v/100;rebuildMaterials();});
+bindS('s-sss-dis','v-sss-dis',v=>{S.fx.sssDis=v/100;rebuildMaterials();});
+bindS('s-sss-amb','v-sss-amb',v=>{S.fx.sssAmb=v/100;rebuildMaterials();});
+bindS('s-toon-steps','v-toon-steps',v=>{S.fx.toonSteps=v;rebuildMaterials();});
+
+document.getElementById('sel-out-style').addEventListener('change',e=>{S.fx.outStyle=e.target.value;rebuildMaterials();});
+document.getElementById('sel-quality').addEventListener('change',e=>{S.scene.quality=parseFloat(e.target.value);if(renderer)renderer.setPixelRatio(Math.min(window.devicePixelRatio*S.scene.quality,2));});
+
+// Colors
+function bindC(cid,swid,cb){
+  const c=document.getElementById(cid);
+  c.addEventListener('input',()=>{
+    const sw=document.getElementById(swid);
+    if(sw)sw.style.background=c.value;
+    cb(c.value);
+  });
+}
+bindC('c-light','sw-light',v=>{S.scene.lightColor=v;if(dirLight)dirLight.color.set(v);});
+bindC('c-bg1','sw-bg1',v=>{S.scene.bg1=v;updateBG();});
+bindC('c-bg2','sw-bg2',v=>{S.scene.bg2=v;updateBG();});
+bindC('c-outline','sw-outline',v=>{S.fx.outColor=v;rebuildMaterials();});
+bindC('c-sss','sw-sss',v=>{S.fx.sssColor=v;rebuildMaterials();});
+
+function updateBG(){
+  scene.background=S.scene.bg?new THREE.Color(S.scene.bg1):null;
+}
+
+// ── NAV TABS ─────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-link').forEach(l=>{
+  l.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
+    l.classList.add('active');
+    ['pose','scene','items','fx'].forEach(s=>{
+      document.getElementById('section-'+s).style.display=s===l.dataset.section?'block':'none';
+    });
+  });
+});
+
+// ── TOOLBAR ──────────────────────────────────────────────────────────
+document.getElementById('tb-cam').addEventListener('click',()=>{rotX=10;rotY=20;panX=0;panY=0;zoom=3.2;});
+document.getElementById('tb-wire').addEventListener('click',function(){
+  S.wireframe=!S.wireframe;
+  this.classList.toggle('active',S.wireframe);
+  if(modelRoot)modelRoot.traverse(o=>{if(o.isMesh&&!o.userData.isOutline&&o.material.wireframe!==undefined)o.material.wireframe=S.wireframe;});
+});
+document.getElementById('tb-ss').addEventListener('click',()=>download());
+
+function download(name='mc-avatar'){
+  if(!renderer)return;
+  renderer.render(scene,camera);
+  const a=document.createElement('a');
+  a.href=renderer.domElement.toDataURL('image/png');
+  a.download=name+'.png';a.click();
+}
+document.getElementById('btn-dl').addEventListener('click',()=>download());
+
+// ── GENERATE ─────────────────────────────────────────────────────────
+document.getElementById('btn-generate').addEventListener('click',()=>{
+  if(!modelRoot){alert('Load a skin first!');return;}
+  const savedRX=rotX,savedRY=rotY;
+  const poses=[
+    {name:'head',rx:15,ry:25,headOnly:true},
+    {name:'front',rx:5,ry:0,headOnly:false},
+    {name:'side',rx:5,ry:60,headOnly:false},
+    {name:'body',rx:10,ry:20,headOnly:false},
+  ];
+  const results=[];
+  poses.forEach(p=>{
+    rotX=p.rx;rotY=p.ry;S.headOnly=p.headOnly;applyPose();updateCam();
+    renderer.render(scene,camera);
+    results.push({name:p.name,url:renderer.domElement.toDataURL('image/png')});
+  });
+  rotX=savedRX;rotY=savedRY;S.headOnly=false;applyPose();
+
+  const existing=document.getElementById('gen-panel');if(existing)existing.remove();
+  const panel=document.createElement('div');panel.id='gen-panel';
+  const close=document.createElement('div');close.className='close-btn';close.textContent='✕';close.onclick=()=>panel.remove();
+  panel.appendChild(close);
+  results.forEach(r=>{
+    const div=document.createElement('div');
+    const a=document.createElement('a');a.href=r.url;a.download=`mc-${r.name}.png`;
+    const img=document.createElement('img');img.src=r.url;
+    const lbl=document.createElement('div');lbl.className='gen-label';lbl.textContent=r.name;
+    a.appendChild(img);div.appendChild(a);div.appendChild(lbl);panel.appendChild(div);
+  });
+  document.body.appendChild(panel);
+});
+
+// ── DIRECTIONAL LIGHT DRAG ────────────────────────────────────────────
+(()=>{
+  const area=document.getElementById('light-area');
+  const pt=document.getElementById('light-pt');
+  let dragging=false;
+  function setPos(cx,cy){
+    const r=area.getBoundingClientRect();
+    const x=Math.max(0,Math.min(r.width,cx-r.left));
+    const y=Math.max(0,Math.min(r.height,cy-r.top));
+    pt.style.left=x+'px';pt.style.top=y+'px';
+    const nx=(x/r.width-.5)*4,ny=(y/r.height-.5)*4;
+    if(dirLight)dirLight.position.set(nx,2,-ny);
+  }
+  area.addEventListener('mousedown',e=>{dragging=true;setPos(e.clientX,e.clientY);});
+  window.addEventListener('mouseup',()=>dragging=false);
+  window.addEventListener('mousemove',e=>{if(dragging)setPos(e.clientX,e.clientY);});
 })();
 
-// ─── ITEMS PANEL ────────────────────────────────────────────────────
-const ITEM_BASE = 'https://mcskins.top/avagen/img/items/';
-const ITEM_START = 639, ITEM_END = 1304, ITEMS_PER_PAGE = 60;
-const allItems = Array.from({ length: ITEM_END - ITEM_START + 1 }, (_, i) => ITEM_START + i);
-let filteredItems = [...allItems];
-let itemPage = 1;
+// ── ITEMS ────────────────────────────────────────────────────────────
+const IBASE='https://mcskins.top/avagen/img/items/',IS=639,IE=1304,IPP=60;
+const ALL=Array.from({length:IE-IS+1},(_,i)=>IS+i);
+let filtered=[...ALL],iPage=1;
 
-window.setArm = function(arm) {
-  state.arm = arm;
-  document.getElementById('arm-left').classList.toggle('active', arm === 'left');
-  document.getElementById('arm-right').classList.toggle('active', arm === 'right');
-};
+window.setArm=arm=>{S.arm=arm;document.getElementById('at-l').classList.toggle('active',arm==='left');document.getElementById('at-r').classList.toggle('active',arm==='right');};
+window.filterItems=v=>{iPage=1;filtered=v.trim()?ALL.filter(id=>String(id).includes(v.trim())):[...ALL];renderItems();};
+window.pickItem=id=>{S.arm==='left'?S.leftItem=id:S.rightItem=id;updateSlots();renderItems();};
+window.clearSlot=arm=>{arm==='left'?S.leftItem=null:S.rightItem=null;updateSlots();renderItems();};
+window.goPage=p=>{iPage=p;renderItems();document.querySelector('.items-body').scrollTop=0;};
 
-window.filterItems = function(v) {
-  itemPage = 1;
-  if (!v.trim()) { filteredItems = [...allItems]; }
-  else { filteredItems = allItems.filter(id => String(id).includes(v.trim())); }
-  renderItems();
-};
-
-function renderItems() {
-  const grid = document.getElementById('items-grid');
-  const start = (itemPage - 1) * ITEMS_PER_PAGE;
-  const page = filteredItems.slice(start, start + ITEMS_PER_PAGE);
-
-  if (!page.length) {
-    grid.innerHTML = '';
-    document.getElementById('items-no-result').style.display = 'block';
-  } else {
-    document.getElementById('items-no-result').style.display = 'none';
-    grid.innerHTML = page.map(id => {
-      const isL = state.leftItem === id, isR = state.rightItem === id;
-      const cls = isL && isR ? 'sel-b' : isL ? 'sel-l' : isR ? 'sel-r' : '';
-      const dot = isL ? '<div class="item-dot dot-l"></div>' : isR ? '<div class="item-dot dot-r"></div>' : '';
-      return `<div class="item-cell ${cls}" onclick="pickItem(${id})" title="#${id}">
-        <img src="${ITEM_BASE}${id}.png" loading="lazy" onerror="this.parentNode.style.opacity='0.15'"/>
-        ${dot}
-      </div>`;
-    }).join('');
-  }
-
-  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
-  const pagesEl = document.getElementById('items-pages');
-  if (totalPages <= 1) { pagesEl.innerHTML = ''; return; }
-  pagesEl.innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
-    .map(p => `<button class="pg-btn${p === itemPage ? ' active' : ''}" onclick="goItemPage(${p})">${p}</button>`)
-    .join('');
+function renderItems(){
+  const grid=document.getElementById('items-grid');
+  const page=filtered.slice((iPage-1)*IPP,iPage*IPP);
+  if(!page.length){grid.innerHTML='';document.getElementById('items-empty').style.display='block';return;}
+  document.getElementById('items-empty').style.display='none';
+  grid.innerHTML=page.map(id=>{
+    const l=S.leftItem===id,r=S.rightItem===id;
+    const cls=l&&r?'sb':l?'sl':r?'sr':'';
+    const dot=l?'<div class="item-dot dot-l"></div>':r?'<div class="item-dot dot-r"></div>':'';
+    return `<div class="item-cell ${cls}" onclick="pickItem(${id})" title="#${id}"><img src="${IBASE}${id}.png" loading="lazy" onerror="this.parentNode.style.opacity='.2'"/>${dot}</div>`;
+  }).join('');
+  const tp=Math.ceil(filtered.length/IPP);
+  document.getElementById('items-pages').innerHTML=tp<2?'':Array.from({length:tp},(_,i)=>i+1).map(p=>`<button class="pg-btn${p===iPage?' active':''}" onclick="goPage(${p})">${p}</button>`).join('');
 }
 
-window.goItemPage = function(p) {
-  itemPage = p;
-  renderItems();
-  document.querySelector('.items-grid-wrap').scrollTop = 0;
-};
-
-window.pickItem = function(id) {
-  if (state.arm === 'left') { state.leftItem = id; }
-  else { state.rightItem = id; }
-  updateSlots();
-  renderItems();
-};
-
-function updateSlots() {
-  const sl = document.getElementById('slot-left');
-  const sr = document.getElementById('slot-right');
-
-  if (state.leftItem) {
-    sl.innerHTML = `<img src="${ITEM_BASE}${state.leftItem}.png"/>
-      <div class="slot-info"><div class="slot-name">#${state.leftItem}</div></div>
-      <div class="slot-clear" onclick="clearSlot('left')">✕</div>`;
-  } else {
-    sl.innerHTML = `<span style="font-size:11px;color:var(--text-dim)">L: empty</span>`;
-  }
-
-  if (state.rightItem) {
-    sr.innerHTML = `<img src="${ITEM_BASE}${state.rightItem}.png"/>
-      <div class="slot-info"><div class="slot-name">#${state.rightItem}</div></div>
-      <div class="slot-clear" onclick="clearSlot('right')">✕</div>`;
-  } else {
-    sr.innerHTML = `<span style="font-size:11px;color:var(--text-dim)">R: empty</span>`;
-  }
+function updateSlots(){
+  const sl=document.getElementById('slot-l'),sr=document.getElementById('slot-r');
+  sl.innerHTML=S.leftItem?`<img src="${IBASE}${S.leftItem}.png"/><span class="slot-name">#${S.leftItem}</span><span class="slot-x" onclick="clearSlot('left')">✕</span>`:'<span class="slot-name">empty</span>';
+  sr.innerHTML=S.rightItem?`<img src="${IBASE}${S.rightItem}.png"/><span class="slot-name">#${S.rightItem}</span><span class="slot-x" onclick="clearSlot('right')">✕</span>`:'<span class="slot-name">empty</span>';
 }
 
-window.clearSlot = function(arm) {
-  if (arm === 'left') state.leftItem = null;
-  else state.rightItem = null;
-  updateSlots();
-  renderItems();
-};
-
-// ─── INIT ────────────────────────────────────────────────────────────
-initThree();
+// ── INIT ─────────────────────────────────────────────────────────────
+init3D();
 renderItems();
-document.getElementById('status-dot').title = 'Renderer active';
 
 })();
 </script>
