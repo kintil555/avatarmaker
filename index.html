@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MC Avatar Maker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Outfit:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #17171e;
+    --surface2: #1e1e28;
+    --border: #2a2a38;
+    --accent: #4f9eff;
+    --accent2: #a855f7;
+    --accent3: #22d3ee;
+    --text: #e8e8f0;
+    --text-dim: #7a7a9a;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .logo {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(79,158,255,0.4);
+  }
+  .logo span { color: var(--accent2); }
+  .header-actions { display: flex; gap: 8px; }
+
+  /* LAYOUT */
+  .app {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 53px);
+  }
+
+  /* SIDEBAR LEFT - Controls */
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  .tab-content { display: none; flex: 1; overflow-y: auto; padding: 14px; }
+  .tab-content.active { display: block; }
+  .tab-content::-webkit-scrollbar { width: 4px; }
+  .tab-content::-webkit-scrollbar-track { background: transparent; }
+  .tab-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Controls */
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 14px 0 8px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .ctrl-label {
+    width: 64px;
+    font-size: 12px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .ctrl-label.wide { width: 100%; margin-bottom: 4px; }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(79,158,255,0.5);
+  }
+  input[type="number"] {
+    width: 44px;
+    padding: 3px 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 11px;
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+    outline: none;
+  }
+  input[type="number"]:focus { border-color: var(--accent); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 6px;
+  }
+  .toggle-label { font-size: 13px; color: var(--text); }
+
+  .toggle {
+    position: relative;
+    width: 36px; height: 20px;
+    cursor: pointer;
+  }
+  .toggle input { display: none; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+  .toggle input:checked + .toggle-track { background: var(--accent); }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+  .color-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .color-swatch {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .color-swatch input[type="color"] {
+    position: absolute;
+    inset: -4px;
+    width: 36px; height: 36px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+  }
+  .color-swatch-display {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+
+  .btn {
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #6aadff; }
+  .btn.sm { padding: 4px 10px; font-size: 11px; }
+  .btn.full { width: 100%; justify-content: center; margin-bottom: 6px; }
+  .btn.danger { border-color: var(--danger); color: var(--danger); }
+  .btn.danger:hover { background: var(--danger); color: #fff; }
+
+  /* SSS & OUTLINE section */
+  .fx-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .fx-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fx-badge {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: rgba(34,211,238,0.15);
+    color: var(--accent3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* CANVAS AREA */
+  .canvas-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  #canvas-container {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 80px rgba(79,158,255,0.06);
+  }
+  #canvas-container canvas {
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  .canvas-toolbar {
+    position: absolute;
+    top: 16px; right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tool-btn {
+    width: 36px; height: 36px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: rgba(23,23,30,0.85);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.15s;
+    backdrop-filter: blur(4px);
+  }
+  .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .canvas-hint {
+    position: absolute;
+    bottom: 16px;
+    left: 50%; transform: translateX(-50%);
+    background: rgba(23,23,30,0.8);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+  }
+
+  .upload-overlay {
+    position: absolute; inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+  }
+  .upload-box {
+    background: var(--surface);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 48px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    max-width: 340px;
+  }
+  .upload-box:hover, .upload-box.drag-over {
+    border-color: var(--accent);
+    background: rgba(79,158,255,0.04);
+  }
+  .upload-icon { font-size: 40px; margin-bottom: 12px; }
+  .upload-title { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+  .upload-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 16px; }
+
+  /* ITEMS PANEL */
+  .items-panel {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .items-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .arm-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .arm-btn {
+    flex: 1;
+    padding: 6px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .arm-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .preview-slots {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .slot {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 42px;
+  }
+  .slot img { width: 28px; height: 28px; image-rendering: pixelated; }
+  .slot-info { flex: 1; min-width: 0; }
+  .slot-name { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slot-clear { font-size: 14px; color: var(--text-dim); cursor: pointer; flex-shrink: 0; transition: color 0.15s; }
+  .slot-clear:hover { color: var(--danger); }
+
+  .items-search {
+    width: 100%;
+    padding: 7px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    outline: none;
+  }
+  .items-search:focus { border-color: var(--accent); }
+
+  .items-grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+  .items-grid-wrap::-webkit-scrollbar { width: 4px; }
+  .items-grid-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 3px;
+  }
+  .item-cell {
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    border: 1.5px solid transparent;
+    transition: all 0.1s;
+  }
+  .item-cell:hover { background: var(--surface2); }
+  .item-cell.sel-l { border-color: var(--accent); }
+  .item-cell.sel-r { border-color: var(--accent2); }
+  .item-cell.sel-b { border-color: var(--success); }
+  .item-cell img { width: 30px; height: 30px; image-rendering: pixelated; }
+  .item-dot {
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--surface);
+  }
+  .dot-l { background: var(--accent); }
+  .dot-r { background: var(--accent2); }
+
+  .items-pages {
+    padding: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .pg-btn {
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pg-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pg-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .items-panel { display: none; }
+  }
+  @media (max-width: 640px) {
+    .sidebar { width: 240px; min-width: 240px; }
+  }
+
+  /* Slider accent colors */
+  .slider-purple::-webkit-slider-thumb { background: var(--accent2); box-shadow: 0 0 6px rgba(168,85,247,0.5); }
+  .slider-cyan::-webkit-slider-thumb { background: var(--accent3); box-shadow: 0 0 6px rgba(34,211,238,0.5); }
+  .slider-green::-webkit-slider-thumb { background: var(--success); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+
+  /* Status dot */
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    display: inline-block;
+    box-shadow: 0 0 6px var(--success);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 5px 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* Light area for directional light */
+  .light-area {
+    width: 90px; height: 90px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+    flex-shrink: 0;
+  }
+  .light-steve {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    background: #8d6e63;
+    border-radius: 2px;
+  }
+  .light-pt {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #ffeb3b;
+    box-shadow: 0 0 8px #ffeb3b;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    border: 2px solid #fff8;
+    pointer-events: none;
+  }
+
+  .info-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+
+  /* Checkerboard for transparent bg */
+  .checker {
+    background-image:
+      linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+      linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+      linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MC<span>AVA</span> MAKER</div>
+  <div class="header-actions">
+    <span class="status-dot" id="status-dot"></span>
+    <button class="btn sm" id="btn-download">⬇ Download</button>
+    <button class="btn sm primary" id="btn-generate">⚡ Generate Avatars</button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <div class="tabs">
+      <div class="tab active" data-tab="pose">Pose</div>
+      <div class="tab" data-tab="scene">Scene</div>
+      <div class="tab" data-tab="fx">FX</div>
+    </div>
+
+    <!-- POSE TAB -->
+    <div class="tab-content active" id="tab-pose">
+      <div class="toggle-row">
+        <span class="toggle-label">Head only</span>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-headonly" />
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+
+      <div class="section-title">Model rotation</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">X</span>
+        <input type="range" min="-180" max="180" value="0" id="s-model-x" /><input type="number" value="0" id="n-model-x" />
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Y</span>
+        <input type="range" min="-180" max="180" value="0" id="s-model-y" /><input type="number" value="0" id="n-model-y" />
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Z</span>
+        <input type="range" min="-180" max="180" value="0" id="s-model-z" /><input type="number" value="0" id="n-model-z" />
+      </div>
+
+      <div class="section-title">Head</div>
+      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-head-x"/><input type="number" value="0" id="n-head-x"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-head-y"/><input type="number" value="0" id="n-head-y"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-head-z"/><input type="number" value="0" id="n-head-z"/></div>
+
+      <div class="section-title">Body</div>
+      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-body-x"/><input type="number" value="0" id="n-body-x"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-body-y"/><input type="number" value="0" id="n-body-y"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-body-z"/><input type="number" value="0" id="n-body-z"/></div>
+
+      <div class="section-title">Left arm</div>
+      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-180" max="180" value="0" id="s-larm-x"/><input type="number" value="0" id="n-larm-x"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-180" max="180" value="0" id="s-larm-y"/><input type="number" value="0" id="n-larm-y"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-180" max="180" value="0" id="s-larm-z"/><input type="number" value="0" id="n-larm-z"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Elbow</span><input type="range" min="0" max="200" value="0" id="s-larm-e"/><input type="number" value="0" id="n-larm-e"/></div>
+
+      <div class="section-title">Right arm</div>
+      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-180" max="180" value="0" id="s-rarm-x"/><input type="number" value="0" id="n-rarm-x"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-180" max="180" value="0" id="s-rarm-y"/><input type="number" value="0" id="n-rarm-y"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-180" max="180" value="0" id="s-rarm-z"/><input type="number" value="0" id="n-rarm-z"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Elbow</span><input type="range" min="0" max="200" value="0" id="s-rarm-e"/><input type="number" value="0" id="n-rarm-e"/></div>
+
+      <div class="section-title">Left leg</div>
+      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-lleg-x"/><input type="number" value="0" id="n-lleg-x"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-lleg-y"/><input type="number" value="0" id="n-lleg-y"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-lleg-z"/><input type="number" value="0" id="n-lleg-z"/></div>
+
+      <div class="section-title">Right leg</div>
+      <div class="ctrl-row"><span class="ctrl-label">X</span><input type="range" min="-90" max="90" value="0" id="s-rleg-x"/><input type="number" value="0" id="n-rleg-x"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Y</span><input type="range" min="-90" max="90" value="0" id="s-rleg-y"/><input type="number" value="0" id="n-rleg-y"/></div>
+      <div class="ctrl-row"><span class="ctrl-label">Z</span><input type="range" min="-90" max="90" value="0" id="s-rleg-z"/><input type="number" value="0" id="n-rleg-z"/></div>
+
+      <div style="margin-top:14px; display:flex; gap:6px;">
+        <button class="btn full" id="btn-reset-pose">↺ Reset pose</button>
+      </div>
+
+      <div class="section-title">Save / Load pose</div>
+      <textarea id="pose-json" style="width:100%;height:70px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:monospace;font-size:10px;padding:6px;resize:none;outline:none;" placeholder='Paste JSON here...'></textarea>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="btn sm" id="btn-copy-pose" style="flex:1">Copy</button>
+        <button class="btn sm" id="btn-load-pose" style="flex:1">Load</button>
+      </div>
+    </div>
+
+    <!-- SCENE TAB -->
+    <div class="tab-content" id="tab-scene">
+      <div class="section-title">Skin</div>
+      <button class="btn full" id="btn-upload-skin">📂 Upload skin (.png)</button>
+      <input type="file" id="file-skin" accept="image/png" style="display:none"/>
+      <div class="ctrl-row" style="margin-top:6px;">
+        <span class="ctrl-label wide">Or username:</span>
+      </div>
+      <div class="ctrl-row">
+        <input type="text" id="input-username" placeholder="Minecraft username" style="flex:1;padding:6px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;outline:none;" />
+        <button class="btn sm" id="btn-fetch">Get</button>
+      </div>
+
+      <div class="section-title">Lighting</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Ambient</span>
+        <input type="range" min="0" max="100" value="40" id="s-ambient" />
+        <input type="number" value="40" id="n-ambient" />
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">Directional</span>
+        <input type="range" min="0" max="100" value="60" id="s-dlight" />
+        <input type="number" value="60" id="n-dlight" />
+      </div>
+      <div class="color-row">
+        <span style="font-size:12px;color:var(--text-dim);">Light color</span>
+        <div class="color-swatch" id="swatch-light">
+          <div class="color-swatch-display" style="background:#ffffff"></div>
+          <input type="color" value="#ffffff" id="color-light" />
+        </div>
+      </div>
+
+      <div class="section-title">Sun position</div>
+      <div class="ctrl-row">
+        <div class="light-area" id="light-area">
+          <div class="light-steve"></div>
+          <div class="light-pt" id="light-pt" style="left:75%;top:25%"></div>
+        </div>
+        <div class="info-text" style="margin-left:8px">Drag the<br/>yellow dot<br/>to reposition<br/>sun</div>
+      </div>
+
+      <div class="section-title">Background</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Enable background</span>
+        <label class="toggle"><input type="checkbox" id="toggle-bg"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="color-row">
+        <span style="font-size:12px;color:var(--text-dim);">Color 1</span>
+        <div class="color-swatch" id="swatch-bg1">
+          <div class="color-swatch-display" style="background:#1a1a2e"></div>
+          <input type="color" value="#1a1a2e" id="color-bg1"/>
+        </div>
+        <span style="font-size:12px;color:var(--text-dim);">Color 2</span>
+        <div class="color-swatch" id="swatch-bg2">
+          <div class="color-swatch-display" style="background:#16213e"></div>
+          <input type="color" value="#16213e" id="color-bg2"/>
+        </div>
+      </div>
+
+      <div class="section-title">Floor</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Show floor</span>
+        <label class="toggle"><input type="checkbox" id="toggle-floor"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+      <div class="color-row">
+        <span style="font-size:12px;color:var(--text-dim);">Floor color</span>
+        <div class="color-swatch" id="swatch-floor">
+          <div class="color-swatch-display" style="background:#ffffff"></div>
+          <input type="color" value="#ffffff" id="color-floor"/>
+        </div>
+      </div>
+
+      <div class="section-title">Camera</div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">FOV</span>
+        <input type="range" min="20" max="120" value="45" id="s-fov"/>
+        <input type="number" value="45" id="n-fov"/>
+      </div>
+    </div>
+
+    <!-- FX TAB -->
+    <div class="tab-content" id="tab-fx">
+      <!-- OUTLINE -->
+      <div class="fx-card">
+        <div class="fx-card-title">
+          <span>◻</span> Outline
+          <span class="fx-badge">Post-FX</span>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Enable outline</span>
+          <label class="toggle"><input type="checkbox" id="toggle-outline"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Thickness</span>
+          <input type="range" min="1" max="20" value="3" step="1" id="s-outline-thick" class="slider-cyan"/>
+          <input type="number" value="3" id="n-outline-thick"/>
+        </div>
+        <div class="color-row">
+          <span style="font-size:12px;color:var(--text-dim);">Color</span>
+          <div class="color-swatch">
+            <div class="color-swatch-display" id="outline-color-display" style="background:#000000"></div>
+            <input type="color" value="#000000" id="color-outline"/>
+          </div>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Style</span>
+          <select id="sel-outline-style" style="flex:1">
+            <option value="solid">Solid</option>
+            <option value="sketch">Sketch / rough</option>
+            <option value="glow">Glow</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Opacity</span>
+          <input type="range" min="0" max="100" value="100" id="s-outline-opacity" class="slider-cyan"/>
+          <input type="number" value="100" id="n-outline-opacity"/>
+        </div>
+        <p class="info-text">Outline rendered via inverted hull + optional edge detection pass.</p>
+      </div>
+
+      <!-- SSS -->
+      <div class="fx-card">
+        <div class="fx-card-title">
+          <span>✦</span> Subsurface Scattering
+          <span class="fx-badge">Shader</span>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Enable SSS</span>
+          <label class="toggle"><input type="checkbox" id="toggle-sss"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Strength</span>
+          <input type="range" min="0" max="100" value="40" id="s-sss-strength" class="slider-purple"/>
+          <input type="number" value="40" id="n-sss-strength"/>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Radius</span>
+          <input type="range" min="0" max="100" value="30" id="s-sss-radius" class="slider-purple"/>
+          <input type="number" value="30" id="n-sss-radius"/>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Distortion</span>
+          <input type="range" min="0" max="100" value="20" id="s-sss-distortion" class="slider-purple"/>
+          <input type="number" value="20" id="n-sss-distortion"/>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Ambient</span>
+          <input type="range" min="0" max="100" value="10" id="s-sss-ambient" class="slider-purple"/>
+          <input type="number" value="10" id="n-sss-ambient"/>
+        </div>
+        <div class="color-row">
+          <span style="font-size:12px;color:var(--text-dim);">Scatter tint</span>
+          <div class="color-swatch">
+            <div class="color-swatch-display" id="sss-color-display" style="background:#ff6666"></div>
+            <input type="color" value="#ff6666" id="color-sss"/>
+          </div>
+        </div>
+        <p class="info-text">Simulates light scattering through skin using a custom GLSL shader with wrap lighting + translucency.</p>
+      </div>
+
+      <!-- Toon shading -->
+      <div class="fx-card">
+        <div class="fx-card-title">
+          <span>◈</span> Toon Shading
+          <span class="fx-badge">Shader</span>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Enable toon</span>
+          <label class="toggle"><input type="checkbox" id="toggle-toon"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Steps</span>
+          <input type="range" min="2" max="8" value="4" step="1" id="s-toon-steps" class="slider-green"/>
+          <input type="number" value="4" id="n-toon-steps"/>
+        </div>
+        <p class="info-text">Quantizes diffuse shading into discrete steps for cel-shaded look.</p>
+      </div>
+
+      <!-- Bloom -->
+      <div class="fx-card">
+        <div class="fx-card-title">
+          <span>✦</span> Bloom
+          <span class="fx-badge">Post-FX</span>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Enable bloom</span>
+          <label class="toggle"><input type="checkbox" id="toggle-bloom"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-label">Strength</span>
+          <input type="range" min="0" max="100" value="30" id="s-bloom" class="slider-purple"/>
+          <input type="number" value="30" id="n-bloom"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS CENTER -->
+  <div class="canvas-wrap">
+    <div id="upload-overlay" class="upload-overlay">
+      <div class="upload-box" id="upload-box">
+        <div class="upload-icon">🎮</div>
+        <div class="upload-title">Load your skin</div>
+        <div class="upload-sub">Drop a PNG here, or click to browse.<br/>Or enter a username in Scene tab.</div>
+        <label for="file-skin-2">
+          <button class="btn primary" onclick="document.getElementById('file-skin-2').click()">Choose skin file</button>
+        </label>
+        <input type="file" id="file-skin-2" accept="image/png" style="display:none"/>
+      </div>
+    </div>
+
+    <div id="canvas-container" style="display:none">
+      <canvas id="main-canvas"></canvas>
+    </div>
+
+    <div class="canvas-toolbar" id="canvas-toolbar" style="display:none">
+      <div class="tool-btn" title="Reset camera" id="btn-reset-cam">⟲</div>
+      <div class="tool-btn" title="Wireframe" id="btn-wireframe">▦</div>
+      <div class="tool-btn" title="Screenshot" id="btn-screenshot">📷</div>
+    </div>
+
+    <div class="canvas-hint" id="canvas-hint" style="display:none">
+      🖱 drag to rotate · scroll to zoom · right-drag to pan
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL - Items -->
+  <div class="items-panel">
+    <div class="items-header">
+      <div class="arm-selector">
+        <div class="arm-btn active" id="arm-left" onclick="setArm('left')">Left arm</div>
+        <div class="arm-btn" id="arm-right" onclick="setArm('right')">Right arm</div>
+      </div>
+      <div class="preview-slots">
+        <div class="slot" id="slot-left">
+          <span style="font-size:11px;color:var(--text-dim)">L: empty</span>
+        </div>
+        <div class="slot" id="slot-right">
+          <span style="font-size:11px;color:var(--text-dim)">R: empty</span>
+        </div>
+      </div>
+      <input class="items-search" id="item-search" placeholder="Search item #..." oninput="filterItems(this.value)"/>
+    </div>
+    <div class="items-grid-wrap">
+      <div class="items-grid" id="items-grid"></div>
+      <div id="items-no-result" style="display:none;padding:24px;text-align:center;color:var(--text-dim);font-size:12px;">No items found</div>
+    </div>
+    <div class="items-pages" id="items-pages"></div>
+  </div>
+</div>
+
+<script>
+// ─── Three.js via CDN ───────────────────────────────────────────────
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+// ─── STATE ──────────────────────────────────────────────────────────
+const state = {
+  skinLoaded: false,
+  arm: 'left',
+  leftItem: null, rightItem: null,
+  headOnly: false,
+  wireframe: false,
+  fx: {
+    outline: false, outlineThick: 3, outlineColor: '#000000', outlineStyle: 'solid', outlineOpacity: 1,
+    sss: false, sssStrength: 0.4, sssRadius: 0.3, sssDistortion: 0.2, sssAmbient: 0.1, sssColor: '#ff6666',
+    toon: false, toonSteps: 4,
+    bloom: false, bloomStrength: 0.3
+  },
+  scene: {
+    ambient: 0.4, dlight: 0.6, lightColor: '#ffffff',
+    bgEnabled: false, bg1: '#1a1a2e', bg2: '#16213e',
+    floorEnabled: false, floorColor: '#ffffff',
+    fov: 45,
+    sunX: 1, sunZ: -1
+  },
+  pose: {
+    model: [0,0,0], head: [0,0,0], body: [0,0,0],
+    larm: [0,0,0,0], rarm: [0,0,0,0],
+    lleg: [0,0,0], rleg: [0,0,0]
+  }
+};
+
+// ─── THREE SCENE SETUP ──────────────────────────────────────────────
+let renderer, scene, camera, controls;
+let skinMesh = null, outlineMesh = null;
+let ambientLight, dirLight;
+let floorMesh, bgMesh;
+let animId = null;
+let skinTexture = null;
+let parts = {};
+
+function initThree() {
+  const canvas = document.getElementById('main-canvas');
+  const wrap = document.getElementById('canvas-container');
+
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0, 0, 4);
+
+  // Lights
+  ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambientLight);
+  dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  dirLight.position.set(3, 3, 3);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.set(2048, 2048);
+  scene.add(dirLight);
+
+  // Floor
+  const floorGeo = new THREE.PlaneGeometry(10, 10);
+  const floorMat = new THREE.ShadowMaterial({ opacity: 0.3 });
+  floorMesh = new THREE.Mesh(floorGeo, floorMat);
+  floorMesh.rotation.x = -Math.PI / 2;
+  floorMesh.position.y = -1.5;
+  floorMesh.receiveShadow = true;
+  floorMesh.visible = false;
+  scene.add(floorMesh);
+
+  setSize();
+  window.addEventListener('resize', setSize);
+
+  initOrbitControls(canvas);
+  startLoop();
+}
+
+function setSize() {
+  const wrap = document.getElementById('canvas-container');
+  if (!wrap.style.display || wrap.style.display === 'none') return;
+  const parent = wrap.parentElement;
+  const w = Math.min(parent.clientWidth - 40, 560);
+  const h = Math.min(parent.clientHeight - 40, 560);
+  const size = Math.min(w, h);
+  renderer.setSize(size, size);
+  camera.aspect = 1;
+  camera.fov = state.scene.fov;
+  camera.updateProjectionMatrix();
+}
+
+// ─── ORBIT CONTROLS (manual) ────────────────────────────────────────
+let isMouseDown = false, lastX = 0, lastY = 0, mouseBtn = 0;
+let rotX = 0, rotY = 0, panX = 0, panY = 0, zoom = 4;
+let isTouch = false;
+
+function initOrbitControls(canvas) {
+  canvas.addEventListener('mousedown', e => { isMouseDown = true; mouseBtn = e.button; lastX = e.clientX; lastY = e.clientY; e.preventDefault(); });
+  window.addEventListener('mouseup', () => { isMouseDown = false; });
+  window.addEventListener('mousemove', e => {
+    if (!isMouseDown) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    if (mouseBtn === 0) { rotY += dx * 0.5; rotX += dy * 0.5; rotX = Math.max(-89, Math.min(89, rotX)); }
+    else if (mouseBtn === 2) { panX += dx * 0.003; panY -= dy * 0.003; }
+  });
+  canvas.addEventListener('wheel', e => {
+    zoom += e.deltaY * 0.005;
+    zoom = Math.max(1, Math.min(10, zoom));
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Touch
+  let lastTouchDist = 0;
+  canvas.addEventListener('touchstart', e => {
+    isTouch = true;
+    if (e.touches.length === 1) { lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastTouchDist = Math.sqrt(dx*dx + dy*dy);
+    }
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - lastX, dy = e.touches[0].clientY - lastY;
+      lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+      rotY += dx * 0.5; rotX += dy * 0.5;
+      rotX = Math.max(-89, Math.min(89, rotX));
+    }
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      zoom -= (dist - lastTouchDist) * 0.01;
+      zoom = Math.max(1, Math.min(10, zoom));
+      lastTouchDist = dist;
+    }
+    e.preventDefault();
+  }, { passive: false });
+}
+
+function updateCamera() {
+  const phi = THREE.MathUtils.degToRad(rotX);
+  const theta = THREE.MathUtils.degToRad(rotY);
+  camera.position.x = zoom * Math.cos(phi) * Math.sin(theta) + panX;
+  camera.position.y = zoom * Math.sin(phi) + panY;
+  camera.position.z = zoom * Math.cos(phi) * Math.cos(theta);
+  camera.lookAt(panX, panY, 0);
+}
+
+// ─── SKIN MATERIALS ─────────────────────────────────────────────────
+function createSSSMaterial(tex) {
+  const s = state.fx;
+  const sc = new THREE.Color(s.sssColor);
+
+  if (s.sss) {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        map: { value: tex },
+        lightPos: { value: dirLight.position },
+        cameraPos: { value: camera.position },
+        sssStrength: { value: s.sssStrength },
+        sssRadius: { value: s.sssRadius },
+        sssDistortion: { value: s.sssDistortion },
+        sssAmbient: { value: s.sssAmbient },
+        sssColor: { value: new THREE.Vector3(sc.r, sc.g, sc.b) },
+        ambientIntensity: { value: state.scene.ambient },
+        lightIntensity: { value: state.scene.dlight },
+        toonEnabled: { value: s.toon ? 1 : 0 },
+        toonSteps: { value: s.toonSteps },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D map;
+        uniform vec3 lightPos;
+        uniform vec3 cameraPos;
+        uniform float sssStrength;
+        uniform float sssRadius;
+        uniform float sssDistortion;
+        uniform float sssAmbient;
+        uniform vec3 sssColor;
+        uniform float ambientIntensity;
+        uniform float lightIntensity;
+        uniform int toonEnabled;
+        uniform float toonSteps;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vWorldPos;
+
+        float toonRamp(float v, float steps) {
+          return floor(v * steps) / steps;
+        }
+
+        void main() {
+          vec4 texColor = texture2D(map, vUv);
+          if (texColor.a < 0.01) discard;
+
+          vec3 L = normalize(lightPos - vWorldPos);
+          vec3 V = normalize(cameraPos - vWorldPos);
+          vec3 N = normalize(vNormal);
+
+          // Diffuse (wrap lighting for SSS)
+          float NdotL = max(0.0, dot(N, L));
+          float wrap = (NdotL + sssRadius) / (1.0 + sssRadius);
+          float diffuse = max(0.0, wrap);
+
+          // Translucency
+          vec3 Lscatter = normalize(L + N * sssDistortion);
+          float VdotL = pow(max(0.0, dot(V, -Lscatter)), 4.0) * sssStrength;
+          float translucency = (VdotL + sssAmbient) * sssStrength;
+
+          // SSS contribution
+          vec3 sss = translucency * sssColor * lightIntensity;
+
+          float d = diffuse * lightIntensity;
+          if (toonEnabled == 1) {
+            d = toonRamp(d, toonSteps);
+          }
+
+          vec3 color = texColor.rgb * (ambientIntensity + d) + sss;
+          gl_FragColor = vec4(color, texColor.a);
+        }
+      `,
+      side: THREE.FrontSide,
+      transparent: true,
+      alphaTest: 0.01,
+    });
+  }
+
+  if (s.toon) {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        map: { value: tex },
+        lightPos: { value: dirLight.position },
+        cameraPos: { value: camera.position },
+        ambientIntensity: { value: state.scene.ambient },
+        lightIntensity: { value: state.scene.dlight },
+        toonSteps: { value: s.toonSteps },
+      },
+      vertexShader: `
+        varying vec2 vUv; varying vec3 vNormal; varying vec3 vWorldPos;
+        void main() {
+          vUv = uv; vNormal = normalize(normalMatrix * normal);
+          vWorldPos = (modelMatrix * vec4(position,1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform sampler2D map; uniform vec3 lightPos; uniform vec3 cameraPos;
+        uniform float ambientIntensity; uniform float lightIntensity; uniform float toonSteps;
+        varying vec2 vUv; varying vec3 vNormal; varying vec3 vWorldPos;
+        void main() {
+          vec4 tc = texture2D(map, vUv);
+          if (tc.a < 0.01) discard;
+          vec3 N = normalize(vNormal);
+          vec3 L = normalize(lightPos - vWorldPos);
+          float NdotL = max(0.0, dot(N,L));
+          float stepped = floor(NdotL * toonSteps) / toonSteps;
+          vec3 col = tc.rgb * (ambientIntensity + stepped * lightIntensity);
+          gl_FragColor = vec4(col, tc.a);
+        }
+      `,
+      side: THREE.FrontSide, transparent: true, alphaTest: 0.01,
+    });
+  }
+
+  // Standard material
+  const mat = new THREE.MeshLambertMaterial({ map: tex, side: THREE.FrontSide, transparent: true, alphaTest: 0.01 });
+  return mat;
+}
+
+function createOutlineMaterial() {
+  const c = new THREE.Color(state.fx.outlineColor);
+  const thick = state.fx.outlineThick * 0.01;
+  const op = state.fx.outlineOpacity / 100;
+
+  if (state.fx.outlineStyle === 'glow') {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        outlineColor: { value: new THREE.Vector3(c.r, c.g, c.b) },
+        thickness: { value: thick },
+        opacity: { value: op },
+      },
+      vertexShader: `
+        uniform float thickness;
+        void main() {
+          vec3 pos = position + normal * thickness;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 outlineColor; uniform float opacity;
+        void main() {
+          gl_FragColor = vec4(outlineColor * 1.5, opacity);
+        }
+      `,
+      side: THREE.BackSide, transparent: true,
+    });
+  }
+
+  if (state.fx.outlineStyle === 'sketch') {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        outlineColor: { value: new THREE.Vector3(c.r, c.g, c.b) },
+        thickness: { value: thick },
+        opacity: { value: op },
+        time: { value: 0 },
+      },
+      vertexShader: `
+        uniform float thickness; uniform float time;
+        void main() {
+          float noise = sin(position.x * 20.0 + time) * 0.002 + cos(position.y * 20.0 + time * 1.3) * 0.002;
+          vec3 pos = position + normal * (thickness + noise);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 outlineColor; uniform float opacity;
+        void main() {
+          gl_FragColor = vec4(outlineColor, opacity);
+        }
+      `,
+      side: THREE.BackSide, transparent: true,
+    });
+  }
+
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      outlineColor: { value: new THREE.Vector3(c.r, c.g, c.b) },
+      thickness: { value: thick },
+      opacity: { value: op },
+    },
+    vertexShader: `
+      uniform float thickness;
+      void main() {
+        vec3 pos = position + normal * thickness;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 outlineColor; uniform float opacity;
+      void main() {
+        gl_FragColor = vec4(outlineColor, opacity);
+      }
+    `,
+    side: THREE.BackSide, transparent: true,
+  });
+}
+
+// ─── BUILD MINECRAFT MODEL ───────────────────────────────────────────
+const UV = {
+  // [texW, texH, offsetX, offsetY, faceW, faceH]
+  head:     [64, 64, 0, 48, 8, 8],
+  outer:    [64, 64, 32, 48, 8, 8],
+  body:     [64, 64, 16, 32, 8, 12],
+  outerBody:[64, 64, 16, 16, 8, 12],
+  larm:     [64, 64, 40, 32, 4, 12],
+  rarm:     [64, 64, 32, 0, 4, 12],
+  lleg:     [64, 64, 0, 32, 4, 12],
+  rleg:     [64, 64, 16, 0, 4, 12],
+  outerLarm:[64, 64, 40, 16, 4, 12],
+  outerRarm:[64, 64, 48, 0, 4, 12],
+  outerLleg:[64, 64, 0, 16, 4, 12],
+  outerRleg:[64, 64, 0, 0, 4, 12],
+};
+
+function applyBoxUV(geo, tw, th, ox, oy, fw, fh, fd) {
+  // Simple box UV mapping for Minecraft skin layout
+  const uvAttr = geo.getAttribute('uv');
+  const idx = geo.getIndex();
+  // faces: right, left, top, bottom, front, back (Three.js BoxGeometry order)
+  const faces = [
+    // right (+x): ox+fd, oy+fd, fw=fd, fh=fh
+    [ox+fd, oy+fd, fd, fh],
+    // left (-x): ox, oy+fd, fw=fd, fh=fh
+    [ox, oy+fd, fd, fh],
+    // top (+y): ox+fd, oy, fw=fw, fh=fd
+    [ox+fd, oy, fw, fd],
+    // bottom (-y): ox+fd+fw, oy, fw=fw, fh=fd
+    [ox+fd+fw, oy, fw, fd],
+    // front (+z): ox+fd+fw, oy+fd, fw=fw, fh=fh (main face)
+    [ox+fd, oy+fd, fw, fh],
+    // back (-z)
+    [ox+fd+fw+fd, oy+fd, fw, fh],
+  ];
+  const positions = [
+    [1,0],[0,0],[0,1],[1,1], // right
+    [0,0],[1,0],[1,1],[0,1], // left
+    [0,0],[1,0],[1,1],[0,1], // top
+    [1,0],[0,0],[0,1],[1,1], // bottom
+    [0,0],[1,0],[1,1],[0,1], // front
+    [1,0],[0,0],[0,1],[1,1], // back
+  ];
+  for (let f = 0; f < 6; f++) {
+    const [sx, sy, sw, sh] = faces[f];
+    for (let v = 0; v < 4; v++) {
+      const vi = f * 4 + v;
+      const [pu, pv] = positions[f * 4 + v] || positions[vi % positions.length];
+      uvAttr.setXY(vi, (sx + pu * sw) / tw, 1 - (sy + pv * sh) / th);
+    }
+  }
+  uvAttr.needsUpdate = true;
+}
+
+let modelGroup = null;
+
+function buildModel(tex) {
+  if (modelGroup) {
+    scene.remove(modelGroup);
+    modelGroup.traverse(o => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose?.(); } });
+    modelGroup = null;
+  }
+  parts = {};
+
+  const mat = () => createSSSMaterial(tex);
+  const outlineMat = () => createOutlineMaterial();
+
+  function makePart(name, w, h, d, px, py, pz, uvKey, parentGroup, outerKey) {
+    const geo = new THREE.BoxGeometry(w/8, h/8, d/8, 1, 1, 1);
+    const [tw, th, ox, oy, fw, fh] = UV[uvKey];
+    applyBoxUV(geo, tw, th, ox, oy, fw, fh, d);
+    const m = mat();
+    const mesh = new THREE.Mesh(geo, m);
+    mesh.castShadow = true;
+
+    const group = new THREE.Group();
+    mesh.position.set(px/8, py/8, pz/8);
+    group.add(mesh);
+
+    // Outline
+    if (state.fx.outline) {
+      const og = geo.clone();
+      const om = outlineMat();
+      const om2 = new THREE.Mesh(og, om);
+      om2.position.copy(mesh.position);
+      group.add(om2);
+    }
+
+    // Outer layer
+    if (outerKey) {
+      const og2 = new THREE.BoxGeometry(w/8*1.12, h/8*1.1, d/8*1.12);
+      const [tw2, th2, ox2, oy2, fw2, fh2] = UV[outerKey];
+      applyBoxUV(og2, tw2, th2, ox2, oy2, fw2, fh2, d);
+      const om3 = mat();
+      const outer = new THREE.Mesh(og2, om3);
+      outer.castShadow = true;
+      outer.position.copy(mesh.position);
+      group.add(outer);
+    }
+
+    parentGroup.add(group);
+    parts[name] = group;
+    return group;
+  }
+
+  modelGroup = new THREE.Group();
+  scene.add(modelGroup);
+
+  // Head group (pivot at base of head = y=0)
+  const headGroup = new THREE.Group();
+  headGroup.position.set(0, 1.5/8*8/8, 0); // top of body
+  modelGroup.add(headGroup);
+  parts.headGroup = headGroup;
+
+  const headGeo = new THREE.BoxGeometry(1, 1, 1);
+  const [tw0, th0, ox0, oy0, fw0, fh0] = UV.head;
+  applyBoxUV(headGeo, tw0, th0, ox0, oy0, fw0, fh0, 8);
+  const headMesh = new THREE.Mesh(headGeo, mat());
+  headMesh.position.set(0, 0.5, 0);
+  headMesh.castShadow = true;
+  headGroup.add(headMesh);
+
+  if (state.fx.outline) {
+    const hog = headGeo.clone();
+    const hom = new THREE.Mesh(hog, outlineMat());
+    hom.position.copy(headMesh.position);
+    headGroup.add(hom);
+  }
+
+  // Outer head
+  const outerGeo = new THREE.BoxGeometry(1.125, 1.125, 1.125);
+  const [tw1, th1, ox1, oy1, fw1, fh1] = UV.outer;
+  applyBoxUV(outerGeo, tw1, th1, ox1, oy1, fw1, fh1, 8);
+  const outerMesh = new THREE.Mesh(outerGeo, mat());
+  outerMesh.position.set(0, 0.5, 0);
+  headGroup.add(outerMesh);
+
+  // Body group
+  const bodyGroup = new THREE.Group();
+  bodyGroup.position.set(0, 0, 0);
+  modelGroup.add(bodyGroup);
+  parts.bodyGroup = bodyGroup;
+
+  const bodyGeo = new THREE.BoxGeometry(1, 1.5, 0.5);
+  const [tw2, th2, ox2, oy2, fw2, fh2] = UV.body;
+  applyBoxUV(bodyGeo, tw2, th2, ox2, oy2, fw2, fh2, 4);
+  const bodyMesh = new THREE.Mesh(bodyGeo, mat());
+  bodyMesh.position.set(0, 0, 0);
+  bodyMesh.castShadow = true;
+  bodyGroup.add(bodyMesh);
+  if (state.fx.outline) {
+    const bog = bodyGeo.clone(); const bom = new THREE.Mesh(bog, outlineMat());
+    bom.position.copy(bodyMesh.position); bodyGroup.add(bom);
+  }
+
+  // Left arm
+  const larmGroup = new THREE.Group();
+  larmGroup.position.set(-0.75, 0.625, 0);
+  modelGroup.add(larmGroup);
+  parts.larmGroup = larmGroup;
+  const larmGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+  applyBoxUV(larmGeo, 64, 64, 40, 32, 4, 12, 4);
+  const larmMesh = new THREE.Mesh(larmGeo, mat());
+  larmMesh.position.set(0, -0.75, 0);
+  larmMesh.castShadow = true;
+  larmGroup.add(larmMesh);
+
+  // Right arm
+  const rarmGroup = new THREE.Group();
+  rarmGroup.position.set(0.75, 0.625, 0);
+  modelGroup.add(rarmGroup);
+  parts.rarmGroup = rarmGroup;
+  const rarmGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+  applyBoxUV(rarmGeo, 64, 64, 32, 0, 4, 12, 4);
+  const rarmMesh = new THREE.Mesh(rarmGeo, mat());
+  rarmMesh.position.set(0, -0.75, 0);
+  rarmMesh.castShadow = true;
+  rarmGroup.add(rarmMesh);
+
+  // Left leg
+  const llegGroup = new THREE.Group();
+  llegGroup.position.set(-0.25, -0.75, 0);
+  modelGroup.add(llegGroup);
+  parts.llegGroup = llegGroup;
+  const llegGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+  applyBoxUV(llegGeo, 64, 64, 0, 32, 4, 12, 4);
+  const llegMesh = new THREE.Mesh(llegGeo, mat());
+  llegMesh.position.set(0, -0.75, 0);
+  llegMesh.castShadow = true;
+  llegGroup.add(llegMesh);
+
+  // Right leg
+  const rlegGroup = new THREE.Group();
+  rlegGroup.position.set(0.25, -0.75, 0);
+  modelGroup.add(rlegGroup);
+  parts.rlegGroup = rlegGroup;
+  const rlegGeo = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+  applyBoxUV(rlegGeo, 64, 64, 16, 0, 4, 12, 4);
+  const rlegMesh = new THREE.Mesh(rlegGeo, mat());
+  rlegMesh.position.set(0, -0.75, 0);
+  rlegMesh.castShadow = true;
+  rlegGroup.add(rlegMesh);
+
+  // Center model
+  modelGroup.position.set(0, 0, 0);
+  applyPose();
+}
+
+function applyPose() {
+  if (!parts.headGroup) return;
+  const p = state.pose;
+  const D = THREE.MathUtils.degToRad;
+
+  if (modelGroup) {
+    modelGroup.rotation.set(D(p.model[0]/100), D(p.model[1]/100), D(p.model[2]/100));
+  }
+  parts.headGroup.rotation.set(D(p.head[0]/100), D(p.head[1]/100), D(p.head[2]/100));
+  parts.bodyGroup.rotation.set(D(p.body[0]/100), D(p.body[1]/100), D(p.body[2]/100));
+  parts.larmGroup.rotation.set(D(p.larm[0]/100), D(p.larm[1]/100), D(p.larm[2]/100));
+  parts.rarmGroup.rotation.set(D(p.rarm[0]/100), D(p.rarm[1]/100), D(p.rarm[2]/100));
+  parts.llegGroup.rotation.set(D(p.lleg[0]/100), D(p.lleg[1]/100), D(p.lleg[2]/100));
+  parts.rlegGroup.rotation.set(D(p.rleg[0]/100), D(p.rleg[1]/100), D(p.rleg[2]/100));
+
+  // Head only
+  if (parts.bodyGroup) parts.bodyGroup.visible = !state.headOnly;
+  if (parts.larmGroup) parts.larmGroup.visible = !state.headOnly;
+  if (parts.rarmGroup) parts.rarmGroup.visible = !state.headOnly;
+  if (parts.llegGroup) parts.llegGroup.visible = !state.headOnly;
+  if (parts.rlegGroup) parts.rlegGroup.visible = !state.headOnly;
+}
+
+// ─── RENDER LOOP ────────────────────────────────────────────────────
+let time = 0;
+function startLoop() {
+  function loop() {
+    animId = requestAnimationFrame(loop);
+    time += 0.016;
+
+    updateCamera();
+
+    // Update sketch outline time uniform
+    if (state.fx.outline && state.fx.outlineStyle === 'sketch' && modelGroup) {
+      modelGroup.traverse(o => {
+        if (o.isMesh && o.material?.uniforms?.time) {
+          o.material.uniforms.time.value = time;
+        }
+      });
+    }
+
+    // Update SSS camera/light positions
+    if (state.fx.sss && modelGroup) {
+      modelGroup.traverse(o => {
+        if (o.isMesh && o.material?.uniforms?.lightPos) {
+          o.material.uniforms.lightPos.value.copy(dirLight.position);
+          o.material.uniforms.cameraPos.value.copy(camera.position);
+        }
+      });
+    }
+
+    renderer.render(scene, camera);
+  }
+  loop();
+}
+
+// ─── SKIN LOADING ───────────────────────────────────────────────────
+function loadSkin(url) {
+  const loader = new THREE.TextureLoader();
+  loader.crossOrigin = 'anonymous';
+  loader.load(url, tex => {
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    tex.colorSpace = THREE.SRGBColorSpace || undefined;
+    tex.encoding = THREE.sRGBEncoding;
+    skinTexture = tex;
+    state.skinLoaded = true;
+    showCanvas();
+    buildModel(tex);
+  }, undefined, e => {
+    alert('Failed to load skin. Check CORS / username.');
+  });
+}
+
+function showCanvas() {
+  document.getElementById('upload-overlay').style.display = 'none';
+  const wrap = document.getElementById('canvas-container');
+  wrap.style.display = 'block';
+  document.getElementById('canvas-toolbar').style.display = 'flex';
+  document.getElementById('canvas-hint').style.display = 'block';
+  setSize();
+}
+
+function handleFileInput(file) {
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  loadSkin(url);
+}
+
+document.getElementById('file-skin').addEventListener('change', e => handleFileInput(e.target.files[0]));
+document.getElementById('file-skin-2').addEventListener('change', e => handleFileInput(e.target.files[0]));
+document.getElementById('btn-upload-skin').addEventListener('click', () => document.getElementById('file-skin').click());
+
+// Drag & drop
+const uploadBox = document.getElementById('upload-box');
+['dragover','dragenter'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.add('drag-over'); }));
+['dragleave','drop'].forEach(ev => uploadBox.addEventListener(ev, e => { uploadBox.classList.remove('drag-over'); }));
+uploadBox.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFileInput(f); });
+
+// Fetch by username
+document.getElementById('btn-fetch').addEventListener('click', () => {
+  const u = document.getElementById('input-username').value.trim();
+  if (!u) return;
+  const url = `https://mcskins.top/assets/images/skinbyname/${u}.png`;
+  loadSkin(url);
+});
+document.getElementById('input-username').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-fetch').click(); });
+
+// ─── CONTROLS BINDING ───────────────────────────────────────────────
+function bindSlider(sliderId, numberId, callback) {
+  const slider = document.getElementById(sliderId);
+  const number = document.getElementById(numberId);
+  if (!slider || !number) return;
+
+  slider.addEventListener('input', () => {
+    number.value = slider.value;
+    callback(parseFloat(slider.value));
+  });
+  number.addEventListener('input', () => {
+    slider.value = number.value;
+    callback(parseFloat(number.value));
+  });
+}
+
+// Pose sliders
+const poseMap = [
+  ['s-model-x','n-model-x', v => { state.pose.model[0]=v; applyPose(); }],
+  ['s-model-y','n-model-y', v => { state.pose.model[1]=v; applyPose(); }],
+  ['s-model-z','n-model-z', v => { state.pose.model[2]=v; applyPose(); }],
+  ['s-head-x','n-head-x', v => { state.pose.head[0]=v; applyPose(); }],
+  ['s-head-y','n-head-y', v => { state.pose.head[1]=v; applyPose(); }],
+  ['s-head-z','n-head-z', v => { state.pose.head[2]=v; applyPose(); }],
+  ['s-body-x','n-body-x', v => { state.pose.body[0]=v; applyPose(); }],
+  ['s-body-y','n-body-y', v => { state.pose.body[1]=v; applyPose(); }],
+  ['s-body-z','n-body-z', v => { state.pose.body[2]=v; applyPose(); }],
+  ['s-larm-x','n-larm-x', v => { state.pose.larm[0]=v; applyPose(); }],
+  ['s-larm-y','n-larm-y', v => { state.pose.larm[1]=v; applyPose(); }],
+  ['s-larm-z','n-larm-z', v => { state.pose.larm[2]=v; applyPose(); }],
+  ['s-larm-e','n-larm-e', v => { state.pose.larm[3]=v; applyPose(); }],
+  ['s-rarm-x','n-rarm-x', v => { state.pose.rarm[0]=v; applyPose(); }],
+  ['s-rarm-y','n-rarm-y', v => { state.pose.rarm[1]=v; applyPose(); }],
+  ['s-rarm-z','n-rarm-z', v => { state.pose.rarm[2]=v; applyPose(); }],
+  ['s-rarm-e','n-rarm-e', v => { state.pose.rarm[3]=v; applyPose(); }],
+  ['s-lleg-x','n-lleg-x', v => { state.pose.lleg[0]=v; applyPose(); }],
+  ['s-lleg-y','n-lleg-y', v => { state.pose.lleg[1]=v; applyPose(); }],
+  ['s-lleg-z','n-lleg-z', v => { state.pose.lleg[2]=v; applyPose(); }],
+  ['s-rleg-x','n-rleg-x', v => { state.pose.rleg[0]=v; applyPose(); }],
+  ['s-rleg-y','n-rleg-y', v => { state.pose.rleg[1]=v; applyPose(); }],
+  ['s-rleg-z','n-rleg-z', v => { state.pose.rleg[2]=v; applyPose(); }],
+];
+poseMap.forEach(([s, n, cb]) => bindSlider(s, n, cb));
+
+// Scene sliders
+bindSlider('s-ambient','n-ambient', v => { state.scene.ambient = v/100; if (ambientLight) ambientLight.intensity = v/100; });
+bindSlider('s-dlight','n-dlight', v => { state.scene.dlight = v/100; if (dirLight) dirLight.intensity = v/100; if (state.skinLoaded) rebuildMaterials(); });
+bindSlider('s-fov','n-fov', v => { state.scene.fov = v; if (camera) { camera.fov = v; camera.updateProjectionMatrix(); } });
+
+// FX sliders
+bindSlider('s-outline-thick','n-outline-thick', v => { state.fx.outlineThick = v; if (state.skinLoaded) rebuildModel(); });
+bindSlider('s-outline-opacity','n-outline-opacity', v => { state.fx.outlineOpacity = v; if (state.skinLoaded) rebuildModel(); });
+bindSlider('s-sss-strength','n-sss-strength', v => { state.fx.sssStrength = v/100; if (state.skinLoaded) rebuildMaterials(); });
+bindSlider('s-sss-radius','n-sss-radius', v => { state.fx.sssRadius = v/100; if (state.skinLoaded) rebuildMaterials(); });
+bindSlider('s-sss-distortion','n-sss-distortion', v => { state.fx.sssDistortion = v/100; if (state.skinLoaded) rebuildMaterials(); });
+bindSlider('s-sss-ambient','n-sss-ambient', v => { state.fx.sssAmbient = v/100; if (state.skinLoaded) rebuildMaterials(); });
+bindSlider('s-toon-steps','n-toon-steps', v => { state.fx.toonSteps = v; if (state.skinLoaded) rebuildMaterials(); });
+bindSlider('s-bloom','n-bloom', v => { state.fx.bloomStrength = v/100; });
+
+// Toggles
+document.getElementById('toggle-headonly').addEventListener('change', e => { state.headOnly = e.target.checked; applyPose(); });
+document.getElementById('toggle-outline').addEventListener('change', e => { state.fx.outline = e.target.checked; if (state.skinLoaded) rebuildModel(); });
+document.getElementById('toggle-sss').addEventListener('change', e => { state.fx.sss = e.target.checked; if (state.skinLoaded) rebuildMaterials(); });
+document.getElementById('toggle-toon').addEventListener('change', e => { state.fx.toon = e.target.checked; if (state.skinLoaded) rebuildMaterials(); });
+document.getElementById('toggle-bloom').addEventListener('change', e => { state.fx.bloom = e.target.checked; });
+document.getElementById('toggle-bg').addEventListener('change', e => { state.scene.bgEnabled = e.target.checked; updateBackground(); });
+document.getElementById('toggle-floor').addEventListener('change', e => { state.scene.floorEnabled = e.target.checked; if (floorMesh) floorMesh.visible = e.target.checked; });
+
+// Select
+document.getElementById('sel-outline-style').addEventListener('change', e => { state.fx.outlineStyle = e.target.value; if (state.skinLoaded) rebuildModel(); });
+
+// Colors
+function bindColor(inputId, displayId, onchange) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const disp = document.getElementById(displayId);
+    if (disp) disp.style.background = input.value;
+    onchange(input.value);
+  });
+}
+bindColor('color-light', null, v => { state.scene.lightColor = v; if (dirLight) dirLight.color.set(v); });
+bindColor('color-bg1', null, v => { state.scene.bg1 = v; updateBackground(); });
+bindColor('color-bg2', null, v => { state.scene.bg2 = v; updateBackground(); });
+bindColor('color-floor', null, v => { state.scene.floorColor = v; if (floorMesh) floorMesh.material.color?.set(v); });
+bindColor('color-outline', 'outline-color-display', v => { state.fx.outlineColor = v; if (state.skinLoaded) rebuildModel(); });
+bindColor('color-sss', 'sss-color-display', v => { state.fx.sssColor = v; if (state.skinLoaded) rebuildMaterials(); });
+
+function updateBackground() {
+  if (state.scene.bgEnabled) {
+    const c1 = new THREE.Color(state.scene.bg1);
+    const c2 = new THREE.Color(state.scene.bg2);
+    scene.background = c1;
+  } else {
+    scene.background = null;
+  }
+}
+
+function rebuildMaterials() {
+  if (!modelGroup || !skinTexture) return;
+  modelGroup.traverse(o => {
+    if (o.isMesh && !o.userData.isOutline) {
+      o.material.dispose?.();
+      o.material = createSSSMaterial(skinTexture);
+    }
+  });
+}
+
+function rebuildModel() {
+  if (!skinTexture) return;
+  buildModel(skinTexture);
+}
+
+// ─── TABS ───────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ─── TOOLBAR ────────────────────────────────────────────────────────
+document.getElementById('btn-reset-cam').addEventListener('click', () => {
+  rotX = 0; rotY = 0; panX = 0; panY = 0; zoom = 4;
+});
+document.getElementById('btn-wireframe').addEventListener('click', () => {
+  state.wireframe = !state.wireframe;
+  if (modelGroup) modelGroup.traverse(o => {
+    if (o.isMesh && o.material?.wireframe !== undefined) o.material.wireframe = state.wireframe;
+  });
+});
+document.getElementById('btn-reset-pose').addEventListener('click', () => {
+  state.pose = { model:[0,0,0], head:[0,0,0], body:[0,0,0], larm:[0,0,0,0], rarm:[0,0,0,0], lleg:[0,0,0], rleg:[0,0,0] };
+  poseMap.forEach(([s,n]) => { document.getElementById(s).value=0; document.getElementById(n).value=0; });
+  applyPose();
+});
+
+// ─── POSE JSON ──────────────────────────────────────────────────────
+document.getElementById('btn-copy-pose').addEventListener('click', () => {
+  const json = JSON.stringify(state.pose);
+  navigator.clipboard.writeText(json).catch(() => {});
+  document.getElementById('pose-json').value = json;
+  document.getElementById('btn-copy-pose').textContent = 'Copied!';
+  setTimeout(() => document.getElementById('btn-copy-pose').textContent = 'Copy', 1500);
+});
+document.getElementById('btn-load-pose').addEventListener('click', () => {
+  try {
+    const p = JSON.parse(document.getElementById('pose-json').value);
+    Object.assign(state.pose, p);
+    applyPose();
+  } catch(e) { alert('Invalid JSON'); }
+});
+
+// ─── DOWNLOAD ───────────────────────────────────────────────────────
+document.getElementById('btn-download').addEventListener('click', () => {
+  if (!renderer) return;
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mc-avatar.png'; a.click();
+});
+
+document.getElementById('btn-screenshot').addEventListener('click', () => {
+  document.getElementById('btn-download').click();
+});
+
+// ─── GENERATE AVATARS ───────────────────────────────────────────────
+document.getElementById('btn-generate').addEventListener('click', () => {
+  if (!state.skinLoaded) { alert('Load a skin first!'); return; }
+  // Snapshot current state, render different poses
+  const origPose = JSON.parse(JSON.stringify(state.pose));
+  const origRot = [rotX, rotY];
+  const poses = [
+    { name: 'Head', headOnly: true, ry: 15, rx: 10 },
+    { name: 'Body', headOnly: false, ry: 15, rx: 5 },
+    { name: 'Side', headOnly: false, ry: 60, rx: 5 },
+    { name: 'Front', headOnly: false, ry: 0, rx: 0 },
+  ];
+  const results = [];
+  poses.forEach((pose, i) => {
+    state.headOnly = pose.headOnly;
+    rotY = pose.ry; rotX = pose.rx;
+    applyPose();
+    updateCamera();
+    renderer.render(scene, camera);
+    results.push({ name: pose.name, url: renderer.domElement.toDataURL('image/png') });
+  });
+  // Restore
+  state.headOnly = false;
+  Object.assign(state.pose, origPose);
+  rotX = origRot[0]; rotY = origRot[1];
+  applyPose();
+  renderer.render(scene, camera);
+
+  // Show download links
+  showGeneratedAvatars(results);
+});
+
+function showGeneratedAvatars(results) {
+  const existing = document.getElementById('generated-panel');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'generated-panel';
+  panel.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:12px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.5);';
+
+  results.forEach(r => {
+    const div = document.createElement('div');
+    div.style.cssText = 'text-align:center;';
+    const a = document.createElement('a');
+    a.href = r.url; a.download = `mc-avatar-${r.name}.png`;
+    const img = document.createElement('img');
+    img.src = r.url; img.style.cssText = 'width:80px;height:80px;border-radius:8px;display:block;border:1px solid var(--border);image-rendering:pixelated;';
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:11px;color:var(--text-dim);margin-top:4px;';
+    label.textContent = r.name;
+    a.appendChild(img); div.appendChild(a); div.appendChild(label);
+    panel.appendChild(div);
+  });
+
+  const close = document.createElement('div');
+  close.textContent = '✕';
+  close.style.cssText = 'position:absolute;top:8px;right:10px;cursor:pointer;color:var(--text-dim);font-size:14px;';
+  close.onclick = () => panel.remove();
+  panel.appendChild(close);
+
+  document.body.appendChild(panel);
+}
+
+// ─── DIRECTIONAL LIGHT DRAG ─────────────────────────────────────────
+(function() {
+  const area = document.getElementById('light-area');
+  const pt = document.getElementById('light-pt');
+  let dragging = false;
+
+  function setPos(cx, cy) {
+    const rect = area.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, cx - rect.left));
+    const y = Math.max(0, Math.min(rect.height, cy - rect.top));
+    pt.style.left = x + 'px'; pt.style.top = y + 'px';
+    const nx = (x / rect.width - 0.5) * 2;
+    const ny = (y / rect.height - 0.5) * 2;
+    if (dirLight) dirLight.position.set(nx * 3, 2, ny * 3);
+  }
+
+  area.addEventListener('mousedown', e => { dragging = true; setPos(e.clientX, e.clientY); pt.style.cursor = 'grabbing'; });
+  window.addEventListener('mouseup', () => { dragging = false; pt.style.cursor = 'grab'; });
+  window.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX, e.clientY); });
+  area.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }, { passive: false });
+  window.addEventListener('touchend', () => { dragging = false; });
+  window.addEventListener('touchmove', e => { if (dragging) setPos(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+})();
+
+// ─── ITEMS PANEL ────────────────────────────────────────────────────
+const ITEM_BASE = 'https://mcskins.top/avagen/img/items/';
+const ITEM_START = 639, ITEM_END = 1304, ITEMS_PER_PAGE = 60;
+const allItems = Array.from({ length: ITEM_END - ITEM_START + 1 }, (_, i) => ITEM_START + i);
+let filteredItems = [...allItems];
+let itemPage = 1;
+
+window.setArm = function(arm) {
+  state.arm = arm;
+  document.getElementById('arm-left').classList.toggle('active', arm === 'left');
+  document.getElementById('arm-right').classList.toggle('active', arm === 'right');
+};
+
+window.filterItems = function(v) {
+  itemPage = 1;
+  if (!v.trim()) { filteredItems = [...allItems]; }
+  else { filteredItems = allItems.filter(id => String(id).includes(v.trim())); }
+  renderItems();
+};
+
+function renderItems() {
+  const grid = document.getElementById('items-grid');
+  const start = (itemPage - 1) * ITEMS_PER_PAGE;
+  const page = filteredItems.slice(start, start + ITEMS_PER_PAGE);
+
+  if (!page.length) {
+    grid.innerHTML = '';
+    document.getElementById('items-no-result').style.display = 'block';
+  } else {
+    document.getElementById('items-no-result').style.display = 'none';
+    grid.innerHTML = page.map(id => {
+      const isL = state.leftItem === id, isR = state.rightItem === id;
+      const cls = isL && isR ? 'sel-b' : isL ? 'sel-l' : isR ? 'sel-r' : '';
+      const dot = isL ? '<div class="item-dot dot-l"></div>' : isR ? '<div class="item-dot dot-r"></div>' : '';
+      return `<div class="item-cell ${cls}" onclick="pickItem(${id})" title="#${id}">
+        <img src="${ITEM_BASE}${id}.png" loading="lazy" onerror="this.parentNode.style.opacity='0.15'"/>
+        ${dot}
+      </div>`;
+    }).join('');
+  }
+
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const pagesEl = document.getElementById('items-pages');
+  if (totalPages <= 1) { pagesEl.innerHTML = ''; return; }
+  pagesEl.innerHTML = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .map(p => `<button class="pg-btn${p === itemPage ? ' active' : ''}" onclick="goItemPage(${p})">${p}</button>`)
+    .join('');
+}
+
+window.goItemPage = function(p) {
+  itemPage = p;
+  renderItems();
+  document.querySelector('.items-grid-wrap').scrollTop = 0;
+};
+
+window.pickItem = function(id) {
+  if (state.arm === 'left') { state.leftItem = id; }
+  else { state.rightItem = id; }
+  updateSlots();
+  renderItems();
+};
+
+function updateSlots() {
+  const sl = document.getElementById('slot-left');
+  const sr = document.getElementById('slot-right');
+
+  if (state.leftItem) {
+    sl.innerHTML = `<img src="${ITEM_BASE}${state.leftItem}.png"/>
+      <div class="slot-info"><div class="slot-name">#${state.leftItem}</div></div>
+      <div class="slot-clear" onclick="clearSlot('left')">✕</div>`;
+  } else {
+    sl.innerHTML = `<span style="font-size:11px;color:var(--text-dim)">L: empty</span>`;
+  }
+
+  if (state.rightItem) {
+    sr.innerHTML = `<img src="${ITEM_BASE}${state.rightItem}.png"/>
+      <div class="slot-info"><div class="slot-name">#${state.rightItem}</div></div>
+      <div class="slot-clear" onclick="clearSlot('right')">✕</div>`;
+  } else {
+    sr.innerHTML = `<span style="font-size:11px;color:var(--text-dim)">R: empty</span>`;
+  }
+}
+
+window.clearSlot = function(arm) {
+  if (arm === 'left') state.leftItem = null;
+  else state.rightItem = null;
+  updateSlots();
+  renderItems();
+};
+
+// ─── INIT ────────────────────────────────────────────────────────────
+initThree();
+renderItems();
+document.getElementById('status-dot').title = 'Renderer active';
+
+})();
+</script>
+</body>
+</html>
